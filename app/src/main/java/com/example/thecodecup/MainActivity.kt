@@ -15,6 +15,7 @@ import com.example.thecodecup.screens.OrderSuccessScreen
 import com.example.thecodecup.screens.MyOrdersScreen
 import com.example.thecodecup.screens.RewardsScreen
 import com.example.thecodecup.screens.RedeemScreen
+import com.example.thecodecup.screens.ProfileScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +48,9 @@ class MainActivity : ComponentActivity() {
 
                     // Route Redeem
                     composable(Screen.Redeem.route) { RedeemScreen(navController) }
+
+                    // Route Profile
+                    composable(Screen.Profile.route) { ProfileScreen(navController) }
                 }
             }
         }

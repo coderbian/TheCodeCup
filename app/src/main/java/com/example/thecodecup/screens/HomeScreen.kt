@@ -37,7 +37,7 @@ fun HomeScreen(navController: NavController) {
                 .padding(20.dp)
         ) {
             // 1. Header Component
-            HeaderSection()
+            HeaderSection(navController)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -56,7 +56,9 @@ fun HomeScreen(navController: NavController) {
 }
 
 @Composable
-fun HeaderSection() {
+fun HeaderSection(navController: NavController) {
+    val profile by DataManager.userProfile
+    
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -64,11 +66,15 @@ fun HeaderSection() {
     ) {
         Column {
             Text("Good morning", color = TextGray, fontSize = 14.sp)
-            Text("Anderson", color = TextWhite, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text(profile.fullName, color = TextWhite, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         }
         Row {
-            IconButton(onClick = {}) { Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = TextWhite) }
-            IconButton(onClick = {}) { Icon(Icons.Default.Person, contentDescription = null, tint = TextWhite) }
+            IconButton(onClick = { navController.navigate(Screen.Cart.route) }) { 
+                Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = TextWhite) 
+            }
+            IconButton(onClick = { navController.navigate(Screen.Profile.route) }) { 
+                Icon(Icons.Default.Person, contentDescription = null, tint = TextWhite) 
+            }
         }
     }
 }
@@ -182,6 +188,20 @@ fun BottomNavBar(navController: NavController, currentRoute: String? = null) {
             selected = currentRoute == Screen.MyOrders.route,
             onClick = {
                 navController.navigate(Screen.MyOrders.route) {
+                    popUpTo(Screen.Home.route) { inclusive = false }
+                }
+            },
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = SurfaceLight,
+                selectedIconColor = CoffeeBrown,
+                unselectedIconColor = TextGray
+            )
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Person, null) }, // Profile icon
+            selected = currentRoute == Screen.Profile.route,
+            onClick = {
+                navController.navigate(Screen.Profile.route) {
                     popUpTo(Screen.Home.route) { inclusive = false }
                 }
             },

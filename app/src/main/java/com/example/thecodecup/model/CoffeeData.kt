@@ -56,6 +56,14 @@ data class RedeemableItem(
     val validUntil: String
 )
 
+// Định nghĩa cấu trúc user profile
+data class UserProfile(
+    val fullName: String,
+    val phoneNumber: String,
+    val email: String,
+    val address: String
+)
+
 // Singleton quản lý dữ liệu (Giả lập Database)
 object DataManager {
     // Menu Cafe giả
@@ -87,6 +95,20 @@ object DataManager {
         RedeemableItem("2", "Flat White", 180, "04.07.21"),
         RedeemableItem("3", "Cappuccino", 180, "04.07.21")
     )
+
+    // User profile
+    var userProfile = mutableStateOf(
+        UserProfile(
+            fullName = "Anderson",
+            phoneNumber = "+60134589525",
+            email = "Anderson@email.com",
+            address = "3 Addersion Court Chino Hills, HO56824, United State"
+        )
+    )
+
+    fun updateUserProfile(profile: UserProfile) {
+        userProfile.value = profile
+    }
 
     fun addToCart(item: CartItem) {
         cart.add(item)

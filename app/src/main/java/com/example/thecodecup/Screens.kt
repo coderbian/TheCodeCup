@@ -11,4 +11,5 @@ sealed class Screen(val route: String) {
     object MyOrders : Screen("my_orders_screen")
     object Rewards : Screen("rewards_screen")
     object Redeem : Screen("redeem_screen")
+    object Profile : Screen("profile_screen")
 }
