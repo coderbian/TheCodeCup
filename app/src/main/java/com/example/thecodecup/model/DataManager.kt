@@ -5,65 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import java.text.SimpleDateFormat
 import java.util.*
 
-// Định nghĩa cấu trúc 1 món Cafe
-data class Coffee(
-    val id: String,
-    val name: String,
-    val basePrice: Double,
-    val description: String = "Single | Iced | Medium | Full Ice"
-)
-
-// Định nghĩa cấu trúc 1 món trong Giỏ hàng
-data class CartItem(
-    val coffee: Coffee,
-    val size: String, // S, M, L
-    val ice: String,  // 1, 2, 3 (viên đá)
-    val shot: String, // Single, Double
-    val quantity: Int,
-    val totalPrice: Double
-)
-
-// Trạng thái đơn hàng
-enum class OrderStatus {
-    ONGOING,
-    COMPLETED
-}
-
-// Định nghĩa cấu trúc đơn hàng
-data class Order(
-    val id: String,
-    val dateTime: String,
-    val items: List<CartItem>,
-    val totalPrice: Double,
-    val status: OrderStatus,
-    val address: String = "3 Addersion Court Chino Hills, HO56824, United State"
-)
-
-// Định nghĩa cấu trúc reward history entry
-data class RewardHistory(
-    val id: String,
-    val coffeeName: String,
-    val quantity: Int,
-    val points: Int,
-    val dateTime: String
-)
-
-// Định nghĩa cấu trúc redeemable item
-data class RedeemableItem(
-    val id: String,
-    val name: String,
-    val pointsRequired: Int,
-    val validUntil: String
-)
-
-// Định nghĩa cấu trúc user profile
-data class UserProfile(
-    val fullName: String,
-    val phoneNumber: String,
-    val email: String,
-    val address: String
-)
-
 // Singleton quản lý dữ liệu (Giả lập Database)
 object DataManager {
     // Menu Cafe giả
@@ -204,3 +145,4 @@ object DataManager {
         return false
     }
 }
+

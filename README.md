@@ -14,7 +14,11 @@ app/src/main/java/com/example/thecodecup/
 ├── MainActivity.kt          # Main entry point & NavHost setup
 ├── Screens.kt              # Navigation routes definition
 ├── model/
-│   └── CoffeeData.kt       # Data models (Coffee, CartItem, Order, RewardHistory, RedeemableItem) & DataManager
+│   ├── Coffee.kt           # Coffee and CartItem data classes
+│   ├── Order.kt             # Order and OrderStatus enum
+│   ├── Reward.kt            # RewardHistory and RedeemableItem data classes
+│   ├── User.kt              # UserProfile data class
+│   └── DataManager.kt       # Singleton data manager with business logic
 ├── screens/
 │   ├── SplashScreen.kt
 │   ├── HomeScreen.kt
@@ -23,7 +27,8 @@ app/src/main/java/com/example/thecodecup/
 │   ├── OrderSuccessScreen.kt
 │   ├── MyOrdersScreen.kt
 │   ├── RewardsScreen.kt
-│   └── RedeemScreen.kt
+│   ├── RedeemScreen.kt
+│   └── ProfileScreen.kt
 └── ui/
     └── theme/
         ├── Color.kt        # Theme colors
@@ -43,7 +48,7 @@ app/src/main/java/com/example/thecodecup/
   - Displays current stamps from DataManager (reactive)
   - Clickable to reset when reaching 8 stamps
 - **Coffee Grid**: Browse available coffee items
-- **Bottom Navigation**: Home, Rewards, My Orders
+- **Bottom Navigation**: Home, Rewards, My Orders, Profile
 
 ### 3. Details Screen
 - Coffee item details
@@ -103,24 +108,38 @@ app/src/main/java/com/example/thecodecup/
   - Deducts points from total when redeemed
   - Navigates back to Rewards screen after successful redemption
 
+### 9. Profile Screen
+- **Profile Information Display**:
+  - Full name, Phone number, Email, Address
+  - Each field has an icon and edit button
+- **Edit Functionality**:
+  - Click edit icon to enter edit mode
+  - Inline editing with text fields
+  - Save/Cancel buttons
+  - Address field supports multiline input
+- Bottom navigation bar integration
+
 ## Data Models
 
-### Coffee
-- `id`, `name`, `basePrice`, `description`
+The project uses a modular data model structure with separate files for each domain:
 
-### CartItem
-- `coffee`, `size`, `ice`, `shot`, `quantity`, `totalPrice`
+### Coffee.kt
+- **Coffee**: `id`, `name`, `basePrice`, `description`
+- **CartItem**: `coffee`, `size`, `ice`, `shot`, `quantity`, `totalPrice`
 
-### Order
-- `id`, `dateTime`, `items`, `totalPrice`, `status` (ONGOING/COMPLETED), `address`
+### Order.kt
+- **OrderStatus**: Enum (ONGOING, COMPLETED)
+- **Order**: `id`, `dateTime`, `items`, `totalPrice`, `status`, `address`
 
-### RewardHistory
-- `id`, `coffeeName`, `points`, `dateTime`
+### Reward.kt
+- **RewardHistory**: `id`, `coffeeName`, `quantity`, `points`, `dateTime`
+- **RedeemableItem**: `id`, `name`, `pointsRequired`, `validUntil`
 
-### RedeemableItem
-- `id`, `name`, `pointsRequired`, `validUntil`
+### User.kt
+- **UserProfile**: `fullName`, `phoneNumber`, `email`, `address`
 
-### DataManager (Singleton)
+### DataManager.kt (Singleton)
+
 - Menu management
 - Cart operations (add, remove, clear, get total)
 - Order management (add, get ongoing/completed, update status)
@@ -146,7 +165,10 @@ app/src/main/java/com/example/thecodecup/
   - Reward history tracking
   - Points redemption for drinks (180 points per item)
   - Redeemable items: Cafe Latte, Flat White, Cappuccino
-- ✅ Bottom navigation for main screens (Home, Rewards, My Orders)
+- ✅ Bottom navigation for main screens (Home, Rewards, My Orders, Profile)
+- ✅ **Profile Management**:
+  - User profile display and editing
+  - Inline editing with save/cancel functionality
 - ✅ Material 3 design following Figma specifications
 
 ## Build & run

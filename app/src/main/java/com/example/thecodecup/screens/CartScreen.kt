@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.thecodecup.Screen
+import com.example.thecodecup.model.CartItem
 import com.example.thecodecup.model.DataManager
 import com.example.thecodecup.model.Order
 import com.example.thecodecup.model.OrderStatus
@@ -105,7 +106,7 @@ fun CartScreen(navController: NavController) {
 // Xử lý Vuốt để xóa (Gesture-Based Item Removal )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SwipeToDeleteItem(item: com.example.thecodecup.model.CartItem, onDelete: () -> Unit) {
+fun SwipeToDeleteItem(item: CartItem, onDelete: () -> Unit) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
             if (it == SwipeToDismissBoxValue.EndToStart) {

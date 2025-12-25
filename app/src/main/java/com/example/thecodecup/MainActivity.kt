@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.thecodecup.screens.HomeScreen
 import com.example.thecodecup.ui.screens.SplashScreen
-import com.example.thecodecup.ui.theme.TheCodeCupTheme // Hãy chắc chắn tên này đúng với tên theme trong file Theme.kt
+import com.example.thecodecup.ui.theme.TheCodeCupTheme
 import com.example.thecodecup.ui.screens.DetailsScreen
 import com.example.thecodecup.ui.screens.CartScreen
 import com.example.thecodecup.screens.OrderSuccessScreen

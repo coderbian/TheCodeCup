@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.thecodecup.Screen
 import com.example.thecodecup.model.DataManager
+import com.example.thecodecup.model.RewardHistory
 import com.example.thecodecup.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -172,7 +173,7 @@ fun MyPointsSection(totalPoints: Int, onRedeemClick: () -> Unit) {
 }
 
 @Composable
-fun RewardHistoryItem(history: com.example.thecodecup.model.RewardHistory) {
+fun RewardHistoryItem(history: RewardHistory) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
