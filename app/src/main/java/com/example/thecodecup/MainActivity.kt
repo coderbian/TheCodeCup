@@ -6,11 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.thecodecup.ui.screens.HomeScreen
+import com.example.thecodecup.screens.HomeScreen
 import com.example.thecodecup.ui.screens.SplashScreen
 import com.example.thecodecup.ui.theme.TheCodeCupTheme // Hãy chắc chắn tên này đúng với tên theme trong file Theme.kt
 import com.example.thecodecup.ui.screens.DetailsScreen
 import com.example.thecodecup.ui.screens.CartScreen
+import com.example.thecodecup.screens.OrderSuccessScreen
+import com.example.thecodecup.screens.MyOrdersScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +33,12 @@ class MainActivity : ComponentActivity() {
 
                     // Route Cart
                     composable(Screen.Cart.route) { CartScreen(navController) }
+
+                    // Route Order Success
+                    composable(Screen.OrderSuccess.route) { OrderSuccessScreen(navController) }
+
+                    // Route My Orders
+                    composable(Screen.MyOrders.route) { MyOrdersScreen(navController) }
                 }
             }
         }

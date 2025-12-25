@@ -20,7 +20,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.thecodecup.Screen
 import com.example.thecodecup.model.DataManager
+import com.example.thecodecup.model.Order
+import com.example.thecodecup.model.OrderStatus
 import com.example.thecodecup.ui.theme.*
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,11 +71,29 @@ fun CartScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
-                        DataManager.clearCart() // Giả lập thanh toán xong thì xóa giỏ
-                        navController.navigate(Screen.Home.route) // Checkout Navigation -> Order Success (tạm về Home)
+                        if (cartItems.isNotEmpty()) {
+                            // Create order from cart items
+                            val order = Order(
+                                id = UUID.randomUUID().toString(),
+                                dateTime = DataManager.formatOrderDateTime(),
+                                items = cartItems.toList(),
+                                totalPrice = totalAmount,
+                                status = OrderStatus.ONGOING
+                            )
+                            // Add order to DataManager
+                            DataManager.addOrder(order)
+                            // Clear cart after checkout
+                            DataManager.clearCart()
+                            // Navigate to Order Success screen
+                            navController.navigate(Screen.OrderSuccess.route) {
+                                // Clear back stack to prevent going back to cart
+                                popUpTo(Screen.Cart.route) { inclusive = true }
+                            }
+                        }
                     },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = ButtonBlue)
+                    colors = ButtonDefaults.buttonColors(containerColor = ButtonBlue),
+                    enabled = cartItems.isNotEmpty()
                 ) {
                     Text("Checkout", fontSize = 16.sp, color = Color.White)
                 }

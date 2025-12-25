@@ -1,4 +1,4 @@
-package com.example.thecodecup.ui.screens
+package com.example.thecodecup.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,7 +25,7 @@ import com.example.thecodecup.ui.theme.*
 fun HomeScreen(navController: NavController) {
     Scaffold(
         containerColor = BackgroundLight,
-        bottomBar = { BottomNavBar() } //  Bottom Navigation Bar
+        bottomBar = { BottomNavBar(navController, currentRoute = Screen.Home.route) } //  Bottom Navigation Bar
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -140,12 +140,16 @@ fun CoffeeGridSection(navController: NavController) {
 }
 
 @Composable
-fun BottomNavBar() {
+fun BottomNavBar(navController: NavController, currentRoute: String? = null) {
     NavigationBar(containerColor = SurfaceLight) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, null) },
-            selected = true,
-            onClick = {},
+            selected = currentRoute == Screen.Home.route,
+            onClick = {
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Home.route) { inclusive = true }
+                }
+            },
             colors = NavigationBarItemDefaults.colors(indicatorColor = SurfaceLight, selectedIconColor = CoffeeBrown, unselectedIconColor = TextGray)
         )
         NavigationBarItem(
@@ -155,10 +159,18 @@ fun BottomNavBar() {
             colors = NavigationBarItemDefaults.colors(unselectedIconColor = TextGray)
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Receipt, null) }, // Orders icon placeholder
-            selected = false,
-            onClick = {},
-            colors = NavigationBarItemDefaults.colors(unselectedIconColor = TextGray)
+            icon = { Icon(Icons.Default.Receipt, null) }, // Orders icon
+            selected = currentRoute == Screen.MyOrders.route,
+            onClick = {
+                navController.navigate(Screen.MyOrders.route) {
+                    popUpTo(Screen.Home.route) { inclusive = false }
+                }
+            },
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = SurfaceLight,
+                selectedIconColor = CoffeeBrown,
+                unselectedIconColor = TextGray
+            )
         )
     }
 }
