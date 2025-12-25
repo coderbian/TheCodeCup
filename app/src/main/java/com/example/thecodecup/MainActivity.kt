@@ -13,6 +13,8 @@ import com.example.thecodecup.ui.screens.DetailsScreen
 import com.example.thecodecup.ui.screens.CartScreen
 import com.example.thecodecup.screens.OrderSuccessScreen
 import com.example.thecodecup.screens.MyOrdersScreen
+import com.example.thecodecup.screens.RewardsScreen
+import com.example.thecodecup.screens.RedeemScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +41,12 @@ class MainActivity : ComponentActivity() {
 
                     // Route My Orders
                     composable(Screen.MyOrders.route) { MyOrdersScreen(navController) }
+
+                    // Route Rewards
+                    composable(Screen.Rewards.route) { RewardsScreen(navController) }
+
+                    // Route Redeem
+                    composable(Screen.Redeem.route) { RedeemScreen(navController) }
                 }
             }
         }

@@ -7,8 +7,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.thecodecup.Screen
+import com.example.thecodecup.model.DataManager
 import com.example.thecodecup.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +42,7 @@ fun HomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(24.dp))
 
             // 2. Loyalty Card View
-            LoyaltyCardSection()
+            LoyaltyCardSection(navController)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -71,16 +74,25 @@ fun HeaderSection() {
 }
 
 @Composable
-fun LoyaltyCardSection() {
+fun LoyaltyCardSection(navController: NavController) {
+    val loyaltyStamps by DataManager.loyaltyStamps
+    
     Card(
         colors = CardDefaults.cardColors(containerColor = LightCards),
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxWidth().height(100.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .clickable(enabled = loyaltyStamps >= 8) {
+                if (loyaltyStamps >= 8) {
+                    DataManager.resetLoyaltyStamps()
+                }
+            }
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Loyalty card", color = TextGray)
-                Text("4 / 8", color = TextGray)
+                Text("Loyalty card", color = TextGray, fontSize = 14.sp)
+                Text("$loyaltyStamps / 8", color = TextGray, fontSize = 14.sp)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -91,8 +103,7 @@ fun LoyaltyCardSection() {
                     Icon(
                         imageVector = Icons.Default.LocalCafe,
                         contentDescription = null,
-                        // 4 ly đầu màu nâu, 4 ly sau màu xám
-                        tint = if (index < 4) CoffeeBrown else Color.LightGray,
+                        tint = if (index < loyaltyStamps) CoffeeBrown else Color.LightGray,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -153,10 +164,18 @@ fun BottomNavBar(navController: NavController, currentRoute: String? = null) {
             colors = NavigationBarItemDefaults.colors(indicatorColor = SurfaceLight, selectedIconColor = CoffeeBrown, unselectedIconColor = TextGray)
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.CardGiftcard, null) }, // Rewards icon placeholder
-            selected = false,
-            onClick = {},
-            colors = NavigationBarItemDefaults.colors(unselectedIconColor = TextGray)
+            icon = { Icon(Icons.Default.CardGiftcard, null) }, // Rewards icon
+            selected = currentRoute == Screen.Rewards.route,
+            onClick = {
+                navController.navigate(Screen.Rewards.route) {
+                    popUpTo(Screen.Home.route) { inclusive = false }
+                }
+            },
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = SurfaceLight,
+                selectedIconColor = CoffeeBrown,
+                unselectedIconColor = TextGray
+            )
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Receipt, null) }, // Orders icon

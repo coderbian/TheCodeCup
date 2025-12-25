@@ -1,6 +1,7 @@
 package com.example.thecodecup.model
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,6 +39,22 @@ data class Order(
     val address: String = "3 Addersion Court Chino Hills, HO56824, United State"
 )
 
+// Định nghĩa cấu trúc reward history entry
+data class RewardHistory(
+    val id: String,
+    val coffeeName: String,
+    val points: Int,
+    val dateTime: String
+)
+
+// Định nghĩa cấu trúc redeemable item
+data class RedeemableItem(
+    val id: String,
+    val name: String,
+    val pointsRequired: Int,
+    val validUntil: String
+)
+
 // Singleton quản lý dữ liệu (Giả lập Database)
 object DataManager {
     // Menu Cafe giả
@@ -53,6 +70,22 @@ object DataManager {
 
     // Danh sách đơn hàng
     val orders = mutableStateListOf<Order>()
+
+    // Loyalty stamps (0-8)
+    var loyaltyStamps = mutableStateOf(0)
+
+    // Total reward points
+    var totalPoints = mutableStateOf(0)
+
+    // Reward history
+    val rewardHistory = mutableStateListOf<RewardHistory>()
+
+    // Redeemable items
+    val redeemableItems = listOf(
+        RedeemableItem("1", "Cafe Latte", 180, "04.07.21"),
+        RedeemableItem("2", "Flat White", 180, "04.07.21"),
+        RedeemableItem("3", "Cappuccino", 180, "04.07.21")
+    )
 
     fun addToCart(item: CartItem) {
         cart.add(item)
@@ -86,7 +119,16 @@ object DataManager {
         val orderIndex = orders.indexOfFirst { it.id == orderId }
         if (orderIndex != -1) {
             val order = orders[orderIndex]
+            val oldStatus = order.status
             orders[orderIndex] = order.copy(status = status)
+            
+            // If order is being completed, add rewards
+            if (oldStatus == OrderStatus.ONGOING && status == OrderStatus.COMPLETED) {
+                // Increment loyalty stamps
+                incrementLoyaltyStamps()
+                // Add reward points and history
+                addRewardPoints(order)
+            }
         }
     }
 
@@ -94,5 +136,43 @@ object DataManager {
     fun formatOrderDateTime(): String {
         val dateFormat = SimpleDateFormat("dd MMMM | hh:mm a", Locale.ENGLISH)
         return dateFormat.format(Date())
+    }
+
+    // Increment loyalty stamps when order is completed
+    fun incrementLoyaltyStamps() {
+        if (loyaltyStamps.value < 8) {
+            loyaltyStamps.value = loyaltyStamps.value + 1
+        }
+    }
+
+    // Reset loyalty stamps when reaching 8
+    fun resetLoyaltyStamps() {
+        loyaltyStamps.value = 0
+    }
+
+    // Add reward points and history when order is completed
+    fun addRewardPoints(order: Order) {
+        // Award 12 points per order (as shown in Figma)
+        val pointsEarned = 12
+        totalPoints.value = totalPoints.value + pointsEarned
+
+        // Add to reward history (use first coffee name from order)
+        val coffeeName = order.items.firstOrNull()?.coffee?.name ?: "Order"
+        val historyEntry = RewardHistory(
+            id = UUID.randomUUID().toString(),
+            coffeeName = coffeeName,
+            points = pointsEarned,
+            dateTime = order.dateTime
+        )
+        rewardHistory.add(historyEntry)
+    }
+
+    // Redeem points for an item
+    fun redeemPoints(item: RedeemableItem): Boolean {
+        if (totalPoints.value >= item.pointsRequired) {
+            totalPoints.value = totalPoints.value - item.pointsRequired
+            return true
+        }
+        return false
     }
 }
