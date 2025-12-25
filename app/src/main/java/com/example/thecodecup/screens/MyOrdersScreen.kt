@@ -156,7 +156,7 @@ fun OrderItemCard(order: Order, onClick: () -> Unit) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = item.coffee.name,
+                        text = "${item.coffee.name} x${item.quantity}",
                         color = TextWhite,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium

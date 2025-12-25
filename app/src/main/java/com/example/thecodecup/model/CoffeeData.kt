@@ -43,6 +43,7 @@ data class Order(
 data class RewardHistory(
     val id: String,
     val coffeeName: String,
+    val quantity: Int,
     val points: Int,
     val dateTime: String
 )
@@ -152,19 +153,24 @@ object DataManager {
 
     // Add reward points and history when order is completed
     fun addRewardPoints(order: Order) {
-        // Award 12 points per order (as shown in Figma)
-        val pointsEarned = 12
+        // Calculate total quantity of all items in the order
+        val totalQuantity = order.items.sumOf { it.quantity }
+        
+        // Award 12 points per item (12 * total quantity)
+        val pointsEarned = 12 * totalQuantity
         totalPoints.value = totalPoints.value + pointsEarned
 
-        // Add to reward history (use first coffee name from order)
-        val coffeeName = order.items.firstOrNull()?.coffee?.name ?: "Order"
-        val historyEntry = RewardHistory(
-            id = UUID.randomUUID().toString(),
-            coffeeName = coffeeName,
-            points = pointsEarned,
-            dateTime = order.dateTime
-        )
-        rewardHistory.add(historyEntry)
+        // Add to reward history - create one entry per unique coffee type
+        order.items.forEach { item ->
+            val historyEntry = RewardHistory(
+                id = UUID.randomUUID().toString(),
+                coffeeName = item.coffee.name,
+                quantity = item.quantity,
+                points = 12 * item.quantity, // Points for this specific item
+                dateTime = order.dateTime
+            )
+            rewardHistory.add(historyEntry)
+        }
     }
 
     // Redeem points for an item

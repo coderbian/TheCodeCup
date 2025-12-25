@@ -179,7 +179,7 @@ fun RewardHistoryItem(history: com.example.thecodecup.model.RewardHistory) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = history.coffeeName,
+            text = "${history.coffeeName} x${history.quantity}",
             color = TextPrimary,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium
