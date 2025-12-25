@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.thecodecup.Screen
-import com.example.thecodecup.ui.theme.DarkBackground
+import com.example.thecodecup.ui.theme.*
 import kotlinx.coroutines.delay
 
 @Composable
@@ -31,7 +31,7 @@ fun SplashScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBackground), // Màu nền từ file Color.kt
+            .background(BackgroundLight),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

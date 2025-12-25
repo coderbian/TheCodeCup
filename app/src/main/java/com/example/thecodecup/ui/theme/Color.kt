@@ -2,13 +2,21 @@ package com.example.thecodecup.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Light theme palette (matching provided Figma)
+val PrimaryBlue = Color(0xFF284B63)    // Main CTA and app bars
+val CardBlue = Color(0xFF1F3B4D)       // Panels / loyalty card
+val AccentCoffee = Color(0xFFC58B5A)   // Coffee accent
+val BackgroundLight = Color(0xFFF6F8FB)
+val SurfaceLight = Color(0xFFFFFFFF)
 
-// Màu của App The Code Cup
-val DarkBackground = Color(0xFF1E2431) // Nền tối
-val LightCards = Color(0xFF333E50)     // Nền các thẻ
-val CoffeeBrown = Color(0xFFD4A574)    // Màu nâu cafe
-val TextWhite = Color(0xFFFFFFFF)
-val TextGray = Color(0xFFAAAAAA)
+// Text colors
+val TextPrimary = Color(0xFF0F172A)
+val TextSecondary = Color(0xFF6B7280)
+val TextOnDark = Color(0xFFF8FAFC)
+
+// UI elements
+val ButtonBlue = PrimaryBlue
+val LightCards = CardBlue
+val CoffeeBrown = AccentCoffee
+val TextWhite = TextOnDark
+val TextGray = TextSecondary

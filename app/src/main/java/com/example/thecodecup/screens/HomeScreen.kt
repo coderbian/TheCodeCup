@@ -24,7 +24,7 @@ import com.example.thecodecup.ui.theme.*
 @Composable
 fun HomeScreen(navController: NavController) {
     Scaffold(
-        containerColor = DarkBackground,
+        containerColor = BackgroundLight,
         bottomBar = { BottomNavBar() } //  Bottom Navigation Bar
     ) { paddingValues ->
         Column(
@@ -141,12 +141,12 @@ fun CoffeeGridSection(navController: NavController) {
 
 @Composable
 fun BottomNavBar() {
-    NavigationBar(containerColor = DarkBackground) {
+    NavigationBar(containerColor = SurfaceLight) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, null) },
             selected = true,
             onClick = {},
-            colors = NavigationBarItemDefaults.colors(indicatorColor = DarkBackground, selectedIconColor = CoffeeBrown, unselectedIconColor = TextGray)
+            colors = NavigationBarItemDefaults.colors(indicatorColor = SurfaceLight, selectedIconColor = CoffeeBrown, unselectedIconColor = TextGray)
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.CardGiftcard, null) }, // Rewards icon placeholder
