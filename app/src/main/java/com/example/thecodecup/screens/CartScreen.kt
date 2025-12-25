@@ -1,18 +1,22 @@
 package com.example.thecodecup.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.thecodecup.ui.utils.getCoffeeImageResource
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -66,7 +70,7 @@ fun CartScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Total Price", fontSize = 18.sp, color = TextGray)
+                    Text("Total Price", fontSize = 18.sp, color = TextSecondary)
                     Text("$${String.format("%.2f", totalAmount)}", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -139,21 +143,26 @@ fun SwipeToDeleteItem(item: CartItem, onDelete: () -> Unit) {
             Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 // Ảnh nhỏ
                 Box(
-                    modifier = Modifier.size(60.dp).background(Color.White, RoundedCornerShape(8.dp)),
+                    modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp)).background(Color.White),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Filled.Coffee, contentDescription = null, tint = CoffeeBrown)
+                    Image(
+                        painter = painterResource(id = getCoffeeImageResource(item.coffee)),
+                        contentDescription = item.coffee.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(item.coffee.name, color = TextWhite, fontWeight = FontWeight.Bold)
+                    Text(item.coffee.name, color = Color.White, fontWeight = FontWeight.Bold)
                     Text(
                         "${item.shot} | ${item.size} | Ice: ${item.ice}",
-                        color = TextGray, fontSize = 12.sp
+                        color = TextSecondary, fontSize = 12.sp
                     )
-                    Text("x${item.quantity}", color = TextWhite, fontWeight = FontWeight.Bold)
+                    Text("x${item.quantity}", color = Color.White, fontWeight = FontWeight.Bold)
                 }
-                Text("$${String.format("%.2f", item.totalPrice)}", color = TextWhite, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text("$${String.format("%.2f", item.totalPrice)}", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
         }
     }

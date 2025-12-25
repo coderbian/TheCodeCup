@@ -1,14 +1,15 @@
 package com.example.thecodecup.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material3.*
+import androidx.compose.ui.res.painterResource
+import com.example.thecodecup.R
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -84,7 +85,7 @@ fun RewardsScreen(navController: NavController) {
                 ) {
                     Text(
                         text = "No reward history yet",
-                        color = TextGray,
+                        color = TextSecondary,
                         fontSize = 14.sp
                     )
                 }
@@ -108,28 +109,30 @@ fun LoyaltyCardSection(stamps: Int, onResetClick: () -> Unit) {
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .height(130.dp)
             .clickable(enabled = stamps >= 8, onClick = onResetClick)
     ) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center) {
+        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.Center) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Loyalty card", color = TextGray, fontSize = 14.sp)
-                Text("$stamps / 8", color = TextGray, fontSize = 14.sp)
+                Text("Loyalty card", color = Color.White, fontSize = 14.sp)
+                Text("$stamps / 8", color = Color.White, fontSize = 14.sp)
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White, RoundedCornerShape(12.dp))
-                    .padding(8.dp),
+                    .padding(12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 repeat(8) { index ->
-                    Icon(
-                        imageVector = Icons.Default.LocalCafe,
-                        contentDescription = null,
-                        tint = if (index < stamps) CoffeeBrown else Color.LightGray,
-                        modifier = Modifier.size(20.dp)
+                    val isActive = index < stamps
+                    Image(
+                        painter = painterResource(
+                            id = if (isActive) R.drawable.loyalty_coffee_cup_active else R.drawable.loyalty_coffee_cup_deactive
+                        ),
+                        contentDescription = if (isActive) "Active stamp ${index + 1}" else "Inactive stamp ${index + 1}",
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             }
@@ -152,11 +155,11 @@ fun MyPointsSection(totalPoints: Int, onRedeemClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("My Points:", color = TextGray, fontSize = 14.sp)
+                Text("My Points:", color = Color.White, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = totalPoints.toString(),
-                    color = TextWhite,
+                    color = Color.White,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -197,7 +200,7 @@ fun RewardHistoryItem(history: RewardHistory) {
             )
             Text(
                 text = history.dateTime,
-                color = TextGray,
+                color = TextSecondary,
                 fontSize = 12.sp
             )
         }

@@ -1,18 +1,20 @@
 package com.example.thecodecup.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.thecodecup.R
 import com.example.thecodecup.Screen
 import com.example.thecodecup.ui.theme.*
 
@@ -29,20 +31,20 @@ fun OrderSuccessScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Large success icon
-            Icon(
-                imageVector = Icons.Default.CheckCircle,
+            // Take away icon
+            Image(
+                painter = painterResource(id = R.drawable.take_away),
                 contentDescription = "Order Success",
-                tint = ButtonBlue,
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier.size(177.dp),
+                contentScale = ContentScale.Fit
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             // Title
             Text(
                 text = "Order Success",
-                fontSize = 28.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
             )
@@ -53,7 +55,7 @@ fun OrderSuccessScreen(navController: NavController) {
             Text(
                 text = "Your order has been placed successfully. For more details, go to my orders.",
                 fontSize = 16.sp,
-                color = TextGray,
+                color = TextSecondary,
                 textAlign = TextAlign.Center,
                 lineHeight = 24.sp
             )
@@ -67,7 +69,7 @@ fun OrderSuccessScreen(navController: NavController) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
+                    .height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonBlue),
                 shape = MaterialTheme.shapes.medium
             ) {

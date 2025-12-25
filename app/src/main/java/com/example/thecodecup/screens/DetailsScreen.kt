@@ -8,14 +8,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
 import androidx.compose.ui.text.font.FontWeight
+import com.example.thecodecup.ui.utils.getCoffeeImageResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -66,7 +70,7 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                // Ảnh Cafe (Placeholder)
+                // Ảnh Cafe
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -75,7 +79,12 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                         .background(Color(0xFFF5F5F5)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Coffee, contentDescription = null, modifier = Modifier.size(100.dp), tint = CoffeeBrown)
+                    Image(
+                        painter = painterResource(id = getCoffeeImageResource(coffee)),
+                        contentDescription = coffee.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))

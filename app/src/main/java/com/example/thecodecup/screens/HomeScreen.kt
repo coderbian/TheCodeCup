@@ -9,7 +9,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.*
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import com.example.thecodecup.R
 import androidx.compose.runtime.Composable
+import com.example.thecodecup.ui.utils.getCoffeeImageResourceByName
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +51,7 @@ fun HomeScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Choose your coffee", color = TextGray, fontSize = 16.sp)
+            Text("Choose your coffee", color = TextSecondary, fontSize = 16.sp)
             Spacer(modifier = Modifier.height(16.dp))
 
             // 3. Coffee List View
@@ -65,15 +70,15 @@ fun HeaderSection(navController: NavController) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text("Good morning", color = TextGray, fontSize = 14.sp)
-            Text(profile.fullName, color = TextWhite, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text("Good morning", color = TextSecondary, fontSize = 14.sp)
+            Text(profile.fullName, color = TextPrimary, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         }
         Row {
             IconButton(onClick = { navController.navigate(Screen.Cart.route) }) { 
-                Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = TextWhite) 
+                Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = TextPrimary) 
             }
             IconButton(onClick = { navController.navigate(Screen.Profile.route) }) { 
-                Icon(Icons.Default.Person, contentDescription = null, tint = TextWhite) 
+                Icon(Icons.Default.Person, contentDescription = null, tint = TextPrimary) 
             }
         }
     }
@@ -88,29 +93,31 @@ fun LoyaltyCardSection(navController: NavController) {
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .height(130.dp)
             .clickable(enabled = loyaltyStamps >= 8) {
                 if (loyaltyStamps >= 8) {
                     DataManager.resetLoyaltyStamps()
                 }
             }
     ) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center) {
+        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.Center) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Loyalty card", color = TextGray, fontSize = 14.sp)
-                Text("$loyaltyStamps / 8", color = TextGray, fontSize = 14.sp)
+                Text("Loyalty card", color = Color.White, fontSize = 14.sp)
+                Text("$loyaltyStamps / 8", color = Color.White, fontSize = 14.sp)
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Row(
-                modifier = Modifier.fillMaxWidth().background(Color.White, RoundedCornerShape(12.dp)).padding(8.dp),
+                modifier = Modifier.fillMaxWidth().background(Color.White, RoundedCornerShape(12.dp)).padding(12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 repeat(8) { index ->
-                    Icon(
-                        imageVector = Icons.Default.LocalCafe,
-                        contentDescription = null,
-                        tint = if (index < loyaltyStamps) CoffeeBrown else Color.LightGray,
-                        modifier = Modifier.size(20.dp)
+                    val isActive = index < loyaltyStamps
+                    Image(
+                        painter = painterResource(
+                            id = if (isActive) R.drawable.loyalty_coffee_cup_active else R.drawable.loyalty_coffee_cup_deactive
+                        ),
+                        contentDescription = if (isActive) "Active stamp ${index + 1}" else "Inactive stamp ${index + 1}",
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             }
@@ -125,31 +132,46 @@ fun CoffeeGridSection(navController: NavController) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
         items(coffees.size) { index ->
             Card(
                 colors = CardDefaults.cardColors(containerColor = LightCards),
                 shape = RoundedCornerShape(16.dp),
-                //  Navigation Intent: On-click listener
+                modifier = Modifier.aspectRatio(1f),
                 onClick = {
-                    // Giả sử id lấy theo index (sau này bạn map ID thật vào)
                     navController.navigate(Screen.Details.createRoute("${index + 1}"))
                 }
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Box(
-                        modifier = Modifier.size(80.dp).clip(RoundedCornerShape(12.dp)).background(Color.White),
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Placeholder Image
-                        Icon(Icons.Default.Coffee, contentDescription = null, tint = CoffeeBrown, modifier = Modifier.size(40.dp))
+                        Image(
+                            painter = painterResource(id = getCoffeeImageResourceByName(coffees[index])),
+                            contentDescription = coffees[index],
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(coffees[index], color = TextWhite, fontWeight = FontWeight.Medium)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        coffees[index], 
+                        color = Color.White, 
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp
+                    )
                 }
             }
         }
@@ -167,7 +189,11 @@ fun BottomNavBar(navController: NavController, currentRoute: String? = null) {
                     popUpTo(Screen.Home.route) { inclusive = true }
                 }
             },
-            colors = NavigationBarItemDefaults.colors(indicatorColor = SurfaceLight, selectedIconColor = CoffeeBrown, unselectedIconColor = TextGray)
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = SurfaceLight, 
+                selectedIconColor = CoffeeBrown, 
+                unselectedIconColor = TextSecondary
+            )
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.CardGiftcard, null) }, // Rewards icon
@@ -180,7 +206,7 @@ fun BottomNavBar(navController: NavController, currentRoute: String? = null) {
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = SurfaceLight,
                 selectedIconColor = CoffeeBrown,
-                unselectedIconColor = TextGray
+                unselectedIconColor = TextSecondary
             )
         )
         NavigationBarItem(
@@ -194,21 +220,7 @@ fun BottomNavBar(navController: NavController, currentRoute: String? = null) {
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = SurfaceLight,
                 selectedIconColor = CoffeeBrown,
-                unselectedIconColor = TextGray
-            )
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Person, null) }, // Profile icon
-            selected = currentRoute == Screen.Profile.route,
-            onClick = {
-                navController.navigate(Screen.Profile.route) {
-                    popUpTo(Screen.Home.route) { inclusive = false }
-                }
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = SurfaceLight,
-                selectedIconColor = CoffeeBrown,
-                unselectedIconColor = TextGray
+                unselectedIconColor = TextSecondary
             )
         )
     }

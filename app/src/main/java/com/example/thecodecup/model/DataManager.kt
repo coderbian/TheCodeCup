@@ -32,18 +32,18 @@ object DataManager {
 
     // Redeemable items
     val redeemableItems = listOf(
-        RedeemableItem("1", "Cafe Latte", 180, "04.07.21"),
-        RedeemableItem("2", "Flat White", 180, "04.07.21"),
-        RedeemableItem("3", "Cappuccino", 180, "04.07.21")
+        RedeemableItem("1", "Cafe Latte", 180, "04.07.26"),
+        RedeemableItem("2", "Flat White", 180, "04.07.26"),
+        RedeemableItem("3", "Cappuccino", 180, "04.07.26")
     )
 
     // User profile
     var userProfile = mutableStateOf(
         UserProfile(
-            fullName = "Anderson",
-            phoneNumber = "+60134589525",
-            email = "Anderson@email.com",
-            address = "3 Addersion Court Chino Hills, HO56824, United State"
+            fullName = "Hieu-Hoc Tran Minh",
+            phoneNumber = "+84348567062",
+            email = "tranminhhieuhoc@gmail.com",
+            address = "227 Nguyen Van Cu Street, Cho Quan Ward, Ho Chi Minh City"
         )
     )
 
