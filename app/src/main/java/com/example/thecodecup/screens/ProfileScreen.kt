@@ -26,13 +26,13 @@ fun ProfileScreen(navController: NavController) {
     val profile by DataManager.userProfile
 
     Scaffold(
-        containerColor = BackgroundPrimary,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text("Profile", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BackgroundPrimary,
-                    titleContentColor = TextPrimaryDark
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
@@ -116,7 +116,7 @@ fun ProfileFieldItem(
     }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = BackgroundPrimary),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -131,13 +131,13 @@ fun ProfileFieldItem(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color.LightGray.copy(alpha = 0.3f), CircleShape),
+                    .background(MaterialTheme.colorScheme.surface, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = TextSecondaryGray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -149,7 +149,7 @@ fun ProfileFieldItem(
             ) {
                 Text(
                     text = label,
-                    color = TextSecondaryGray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
                 if (isEditing) {
@@ -159,8 +159,8 @@ fun ProfileFieldItem(
                             onValueChange = { editedValue = it },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ButtonPrimary,
-                                unfocusedBorderColor = TextSecondaryGray.copy(alpha = 0.5f)
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                             ),
                             maxLines = 3
                         )
@@ -170,8 +170,8 @@ fun ProfileFieldItem(
                             onValueChange = { editedValue = it },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ButtonPrimary,
-                                unfocusedBorderColor = TextSecondaryGray.copy(alpha = 0.5f)
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                             )
                         )
                     }
@@ -183,19 +183,19 @@ fun ProfileFieldItem(
                             editedValue = value
                             isEditing = false
                         }) {
-                            Text("Cancel", color = TextSecondaryGray)
+                            Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         TextButton(onClick = {
                             onSave(editedValue)
                             isEditing = false
                         }) {
-                            Text("Save", color = ButtonPrimary, fontWeight = FontWeight.Medium)
+                            Text("Save", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Medium)
                         }
                     }
                 } else {
                     Text(
                         text = value,
-                        color = TextPrimaryDark,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -211,7 +211,7 @@ fun ProfileFieldItem(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit",
-                        tint = TextSecondaryGray,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }

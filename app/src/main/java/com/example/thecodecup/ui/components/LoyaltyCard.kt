@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -21,9 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.thecodecup.R
-import com.example.thecodecup.ui.theme.CardDarkBlue
-import com.example.thecodecup.ui.theme.CardWhite
-import com.example.thecodecup.ui.theme.TextOnDarkSurface
 import androidx.compose.material3.Text
 
 @Composable
@@ -35,7 +33,7 @@ fun LoyaltyCard(
     val canReset = stamps >= 8
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = CardDarkBlue),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
             .fillMaxWidth()
@@ -47,14 +45,19 @@ fun LoyaltyCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Loyalty card", color = TextOnDarkSurface, fontSize = 14.sp)
-                Text("$stamps / 8", color = TextOnDarkSurface, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                Text("Loyalty card", color = MaterialTheme.colorScheme.onSecondary, fontSize = 14.sp)
+                Text(
+                    "$stamps / 8",
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
             }
             Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(CardWhite, RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
                     .padding(12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {

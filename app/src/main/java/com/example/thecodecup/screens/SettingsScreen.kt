@@ -39,12 +39,12 @@ fun SettingsScreen(navController: NavController) {
     var showClearDataDialog by remember { mutableStateOf(false) }
     
     Scaffold(
-        containerColor = BackgroundPrimary,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Settings", fontWeight = FontWeight.Bold, color = TextPrimaryDark) },
+                title = { Text("Settings", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
@@ -60,7 +60,7 @@ fun SettingsScreen(navController: NavController) {
         ) {
             // Profile Section
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -71,7 +71,7 @@ fun SettingsScreen(navController: NavController) {
                         "Account",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextPrimaryDark
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     
@@ -87,7 +87,7 @@ fun SettingsScreen(navController: NavController) {
             
             // Appearance Section
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -98,7 +98,7 @@ fun SettingsScreen(navController: NavController) {
                         "Appearance",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextPrimaryDark
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     
@@ -112,7 +112,7 @@ fun SettingsScreen(navController: NavController) {
             
             // Preferences Section
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -123,7 +123,7 @@ fun SettingsScreen(navController: NavController) {
                         "Preferences",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextPrimaryDark
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     
@@ -136,7 +136,10 @@ fun SettingsScreen(navController: NavController) {
                         onCheckedChange = { DataManager.setNotificationsEnabled(it) }
                     )
                     
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = DividerColor)
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 10.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
                     
                     // Location
                     SettingsItem(
@@ -151,7 +154,7 @@ fun SettingsScreen(navController: NavController) {
 
             // Danger Zone
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -162,7 +165,7 @@ fun SettingsScreen(navController: NavController) {
                         "Data",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextPrimaryDark
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -196,14 +199,14 @@ fun SettingsScreen(navController: NavController) {
                                 Text(
                                     "Remove cart, orders, rewards, profile and settings",
                                     fontSize = 12.sp,
-                                    color = TextSecondaryGray
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
-                            tint = TextSecondaryGray,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -263,14 +266,14 @@ fun SettingsItem(
                     painter = painterResource(id = icon),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(IconActive)
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
             } else if (iconVector != null) {
                 Icon(
                     imageVector = iconVector,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
-                    tint = IconActive
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
             
@@ -280,12 +283,12 @@ fun SettingsItem(
                     title,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = TextPrimaryDark
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     subtitle,
                     fontSize = 12.sp,
-                    color = TextSecondaryGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -294,7 +297,7 @@ fun SettingsItem(
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = TextSecondaryGray,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(24.dp)
         )
     }
@@ -325,7 +328,7 @@ fun SettingsItemWithSwitch(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = IconActive
+                tint = MaterialTheme.colorScheme.primary
             )
             
             // Text
@@ -334,12 +337,12 @@ fun SettingsItemWithSwitch(
                     title,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = TextPrimaryDark
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     subtitle,
                     fontSize = 12.sp,
-                    color = TextSecondaryGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -349,10 +352,10 @@ fun SettingsItemWithSwitch(
             checked = isChecked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = ButtonPrimary,
-                uncheckedThumbColor = Color.White,
-                uncheckedTrackColor = TextSecondaryGray
+                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                uncheckedThumbColor = MaterialTheme.colorScheme.surface,
+                uncheckedTrackColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
     }
@@ -363,6 +366,10 @@ fun DarkModeToggleItem(
     isDarkMode: Boolean,
     onToggle: () -> Unit
 ) {
+    val themeIcon = if (isDarkMode) R.drawable.moon else R.drawable.sun
+    val themeTitle = if (isDarkMode) "Dark mode" else "Light mode"
+    val themeSubtitle = if (isDarkMode) "Dark theme enabled" else "Light theme enabled"
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -377,24 +384,24 @@ fun DarkModeToggleItem(
         ) {
             // Moon/Sun Icon
             Image(
-                painter = painterResource(id = R.drawable.moon_icon),
+                painter = painterResource(id = themeIcon),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                colorFilter = ColorFilter.tint(IconActive)
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
             )
             
             // Text
             Column {
                 Text(
-                    "Dark Mode",
+                    themeTitle,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = TextPrimaryDark
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    if (isDarkMode) "Dark theme enabled" else "Light theme enabled",
+                    themeSubtitle,
                     fontSize = 12.sp,
-                    color = TextSecondaryGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -405,7 +412,7 @@ fun DarkModeToggleItem(
                 .width(60.dp)
                 .height(32.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(if (isDarkMode) Color.Black else Color(0xFFFF5722))
+                .background(if (isDarkMode) MaterialTheme.colorScheme.onSurface else Color(0xFFFF5722))
                 .clickable(onClick = onToggle)
                 .padding(4.dp),
             contentAlignment = if (isDarkMode) Alignment.CenterEnd else Alignment.CenterStart
@@ -415,7 +422,7 @@ fun DarkModeToggleItem(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
             )
         }
     }

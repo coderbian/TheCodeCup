@@ -21,6 +21,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -46,11 +47,6 @@ import com.example.thecodecup.model.DataManager
 import com.example.thecodecup.model.Order
 import com.example.thecodecup.model.OrderStatus
 import com.example.thecodecup.model.PaymentMethod
-import com.example.thecodecup.ui.theme.BackgroundPrimary
-import com.example.thecodecup.ui.theme.ButtonPrimary
-import com.example.thecodecup.ui.theme.CardLightGray
-import com.example.thecodecup.ui.theme.TextPrimaryDark
-import com.example.thecodecup.ui.theme.TextSecondaryGray
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,16 +75,20 @@ fun CheckoutScreen(navController: NavController) {
     }
 
     Scaffold(
-        containerColor = BackgroundPrimary,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Checkout", fontWeight = FontWeight.Bold, color = TextPrimaryDark) },
+                title = { Text("Checkout", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimaryDark)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         }
     ) { paddingValues ->
@@ -101,7 +101,7 @@ fun CheckoutScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Your cart is empty", color = TextSecondaryGray)
+                Text("Your cart is empty", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             return@Scaffold
         }
@@ -116,12 +116,12 @@ fun CheckoutScreen(navController: NavController) {
         ) {
             // Shipping info
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Shipping", fontWeight = FontWeight.Bold, color = TextPrimaryDark, fontSize = 16.sp)
+                    Text("Shipping", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
 
                     OutlinedTextField(
                         value = receiverName,
@@ -142,16 +142,16 @@ fun CheckoutScreen(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.LocationOn, contentDescription = null, tint = TextSecondaryGray)
+                            Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                             Spacer(modifier = Modifier.height(0.dp))
-                            Text("Address", color = TextPrimaryDark, fontWeight = FontWeight.Medium)
+                            Text("Address", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium)
                         }
                         Button(
                             onClick = { navController.navigate(Screen.AddressPicker.route) },
-                            colors = ButtonDefaults.buttonColors(containerColor = CardLightGray),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text("Change", color = TextPrimaryDark)
+                            Text("Change", color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
 
@@ -166,12 +166,12 @@ fun CheckoutScreen(navController: NavController) {
 
             // Payment method
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Payment", fontWeight = FontWeight.Bold, color = TextPrimaryDark, fontSize = 16.sp)
+                    Text("Payment", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
 
                     PaymentOption(
                         title = "Cash",
@@ -193,7 +193,7 @@ fun CheckoutScreen(navController: NavController) {
 
             // Place order
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -203,8 +203,13 @@ fun CheckoutScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Total", color = TextSecondaryGray, fontSize = 14.sp)
-                        Text("$${String.format("%.2f", totalAmount)}", color = TextPrimaryDark, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                        Text("Total", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                        Text(
+                            "$${String.format("%.2f", totalAmount)}",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
                     }
                     Button(
                         onClick = {
@@ -227,10 +232,10 @@ fun CheckoutScreen(navController: NavController) {
                         },
                         enabled = receiverName.isNotBlank() && receiverPhone.isNotBlank() && address.isNotBlank(),
                         modifier = Modifier.fillMaxWidth().height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = ButtonPrimary),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("Place order", color = Color.White, fontWeight = FontWeight.Medium)
+                        Text("Place order", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Medium)
                     }
                 }
             }
@@ -251,7 +256,7 @@ private fun PaymentOption(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title, color = TextPrimaryDark, fontSize = 14.sp)
+        Text(title, color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
         RadioButton(selected = selected, onClick = onSelect)
     }
 }

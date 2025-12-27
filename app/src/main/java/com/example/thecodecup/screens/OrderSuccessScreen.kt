@@ -17,11 +17,12 @@ import androidx.navigation.NavController
 import com.example.thecodecup.R
 import com.example.thecodecup.Screen
 import com.example.thecodecup.ui.theme.*
+import androidx.compose.ui.graphics.ColorFilter
 
 @Composable
 fun OrderSuccessScreen(navController: NavController) {
     Scaffold(
-        containerColor = BackgroundPrimary
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -36,7 +37,8 @@ fun OrderSuccessScreen(navController: NavController) {
                 painter = painterResource(id = R.drawable.take_away),
                 contentDescription = "Order Success",
                 modifier = Modifier.size(177.dp),
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Fit,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
             )
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -46,7 +48,7 @@ fun OrderSuccessScreen(navController: NavController) {
                 text = "Order Success",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimaryDark
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -55,12 +57,12 @@ fun OrderSuccessScreen(navController: NavController) {
             Text(
                 text = "Your order has been placed successfully. For more details, go to my orders.",
                 fontSize = 16.sp,
-                color = TextSecondaryGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 lineHeight = 24.sp
             )
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Track My Order button
             Button(
@@ -70,13 +72,13 @@ fun OrderSuccessScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = ButtonPrimary),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.medium
             ) {
                 Text(
                     text = "Track My Order",
                     fontSize = 16.sp,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Medium
                 )
             }

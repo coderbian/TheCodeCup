@@ -50,13 +50,17 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
     val totalPrice = (coffee.basePrice + sizePrice + shotPrice) * quantity
 
     Scaffold(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Details", fontWeight = FontWeight.Bold, color = TextPrimaryDark) },
+                title = { Text("Details", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimaryDark)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 },
                 actions = {
@@ -65,12 +69,12 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                             painter = painterResource(id = R.drawable.shopping_card_icon),
                             contentDescription = "Cart",
                             modifier = Modifier.size(24.dp),
-                            colorFilter = ColorFilter.tint(TextPrimaryDark)
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
@@ -81,13 +85,13 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                 .padding(padding)
         ) {
             // Ảnh Cafe
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
                     .height(180.dp)
-                    .background(CardLightGray),
-                contentAlignment = Alignment.Center
-            ) {
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
                 Image(
                     painter = painterResource(id = getCoffeeImageResource(coffee)),
                     contentDescription = coffee.name,
@@ -103,24 +107,24 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    // Tên món và Số lượng
-                    Row(
+                // Tên món và Số lượng
+                Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                         Text(
                             text = coffee.name,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = TextPrimaryDark
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         QuantitySelector(quantity = quantity, onIncrease = { quantity++ }, onDecrease = { if (quantity > 1) quantity-- })
                     }
 
-                    HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
 
                     // Shot
                     OptionRow(
@@ -131,7 +135,7 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                         isTextOnly = true
                     )
 
-                    HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
 
                     // Select (Hot/Cold)
                     OptionRow(
@@ -142,7 +146,7 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                         isTextOnly = false
                     )
 
-                    HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
 
                     // Size
                     SizeOptionRow(
@@ -150,7 +154,7 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                         onSelect = { selectedSize = it }
                     )
 
-                    HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
 
                     // Ice
                     IceOptionRow(
@@ -168,7 +172,7 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                         navController.navigate(Screen.Cart.route)
                     },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = ButtonPrimary),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
@@ -178,10 +182,15 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
                             contentDescription = null,
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Add to cart", fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Medium)
+                        Text(
+                            "Add to cart",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 }
             }
@@ -194,8 +203,8 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
 fun QuantitySelector(quantity: Int, onIncrease: () -> Unit, onDecrease: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(28.dp),
-        border = BorderStroke(1.dp, Color(0xFFE0E0E0)),
-        color = Color.White
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -203,11 +212,11 @@ fun QuantitySelector(quantity: Int, onIncrease: () -> Unit, onDecrease: () -> Un
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             IconButton(onClick = onDecrease, modifier = Modifier.size(24.dp)) {
-                Text("-", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
+                Text("-", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             }
-            Text("$quantity", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
+            Text("$quantity", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             IconButton(onClick = onIncrease, modifier = Modifier.size(24.dp)) {
-                Text("+", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
+                Text("+", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             }
         }
     }
@@ -223,7 +232,7 @@ fun OptionRow(title: String, options: List<String>, selected: String, onSelect: 
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
+        Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             options.forEach { option ->
                 val isSelected = option == selected
@@ -231,14 +240,14 @@ fun OptionRow(title: String, options: List<String>, selected: String, onSelect: 
                     // Text-only button (Shot)
                     Surface(
                         shape = RoundedCornerShape(24.dp),
-                        border = if (isSelected) BorderStroke(1.dp, TextPrimaryDark) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
-                        color = if (isSelected) Color.Black else Color.White,
+                        border = if (isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
                         modifier = Modifier.clickable { onSelect(option) }
                     ) {
                         Text(
                             text = option,
                             modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp),
-                            color = if (isSelected) Color.White else TextSecondaryGray,
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp
                         )
                     }
@@ -246,8 +255,8 @@ fun OptionRow(title: String, options: List<String>, selected: String, onSelect: 
                     // Icon button (Select - Hot/Cold)
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        border = if (isSelected) BorderStroke(2.dp, TextPrimaryDark) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
-                        color = Color.White,
+                        border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        color = MaterialTheme.colorScheme.surface,
                         modifier = Modifier
                             .size(56.dp)
                             .clickable { onSelect(option) }
@@ -259,7 +268,10 @@ fun OptionRow(title: String, options: List<String>, selected: String, onSelect: 
                                 ),
                                 contentDescription = option,
                                 modifier = Modifier.size(28.dp),
-                                colorFilter = ColorFilter.tint(if (isSelected) Color.Black else Color(0xFFD8D8D8))
+                                colorFilter = ColorFilter.tint(
+                                    if (isSelected) MaterialTheme.colorScheme.onSurface
+                                    else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
+                                )
                             )
                         }
                     }
@@ -279,14 +291,14 @@ fun SizeOptionRow(selected: String, onSelect: (String) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Size", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
+        Text("Size", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf("S", "M", "L").forEach { size ->
                 val isSelected = size == selected
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    border = if (isSelected) BorderStroke(2.dp, TextPrimaryDark) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
-                    color = Color.White,
+                    border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier
                         .size(56.dp)
                         .clickable { onSelect(size) }
@@ -296,7 +308,10 @@ fun SizeOptionRow(selected: String, onSelect: (String) -> Unit) {
                             painter = painterResource(id = R.drawable.cup_size),
                             contentDescription = size,
                             modifier = Modifier.size(if (size == "S") 20.dp else if (size == "M") 28.dp else 36.dp),
-                            colorFilter = ColorFilter.tint(if (isSelected) Color.Black else Color(0xFFD8D8D8))
+                            colorFilter = ColorFilter.tint(
+                                if (isSelected) MaterialTheme.colorScheme.onSurface
+                                else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
+                            )
                         )
                     }
                 }
@@ -315,7 +330,7 @@ fun IceOptionRow(selected: String, onSelect: (String) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Ice", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
+        Text("Ice", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             val iceOptions = listOf(
                 "No" to R.drawable.ice_1,
@@ -327,8 +342,8 @@ fun IceOptionRow(selected: String, onSelect: (String) -> Unit) {
                 val isSelected = ice == selected
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    border = if (isSelected) BorderStroke(2.dp, TextPrimaryDark) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
-                    color = Color.White,
+                    border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier
                         .size(56.dp)
                         .clickable { onSelect(ice) }
@@ -338,7 +353,10 @@ fun IceOptionRow(selected: String, onSelect: (String) -> Unit) {
                             painter = painterResource(id = iconRes),
                             contentDescription = ice,
                             modifier = Modifier.size(28.dp),
-                            colorFilter = ColorFilter.tint(if (isSelected) Color.Black else Color(0xFFD8D8D8))
+                            colorFilter = ColorFilter.tint(
+                                if (isSelected) MaterialTheme.colorScheme.onSurface
+                                else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
+                            )
                         )
                     }
                 }

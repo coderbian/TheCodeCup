@@ -33,13 +33,13 @@ fun RewardsScreen(navController: NavController) {
     val rewardHistory = DataManager.rewardHistory
 
     Scaffold(
-        containerColor = BackgroundPrimary,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text("Rewards", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BackgroundPrimary,
-                    titleContentColor = TextPrimaryDark
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
@@ -71,7 +71,7 @@ fun RewardsScreen(navController: NavController) {
                 text = "History Rewards",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimaryDark
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             if (rewardHistory.isEmpty()) {
@@ -83,7 +83,7 @@ fun RewardsScreen(navController: NavController) {
                 ) {
                     Text(
                         text = "No reward history yet",
-                        color = TextSecondaryGray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp
                     )
                 }
@@ -103,7 +103,7 @@ fun RewardsScreen(navController: NavController) {
 @Composable
 fun MyPointsSection(totalPoints: Int, onRedeemClick: () -> Unit) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = CardDarkBlue),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -115,21 +115,21 @@ fun MyPointsSection(totalPoints: Int, onRedeemClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("My Points:", color = TextOnDarkSurface, fontSize = 14.sp)
+                Text("My Points:", color = MaterialTheme.colorScheme.onSecondary, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = totalPoints.toString(),
-                    color = TextOnDarkSurface,
+                    color = MaterialTheme.colorScheme.onSecondary,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
             Button(
                 onClick = onRedeemClick,
-                colors = ButtonDefaults.buttonColors(containerColor = CoffeeAccent),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Redeem drinks", color = TextOnDarkSurface, fontSize = 14.sp)
+                Text("Redeem drinks", color = MaterialTheme.colorScheme.onTertiary, fontSize = 14.sp)
             }
         }
     }
@@ -144,7 +144,7 @@ fun RewardHistoryItem(history: RewardHistory) {
     ) {
         Text(
             text = "${history.coffeeName} x${history.quantity}",
-            color = TextPrimaryDark,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
@@ -154,13 +154,13 @@ fun RewardHistoryItem(history: RewardHistory) {
         ) {
             Text(
                 text = "+ ${history.points} Pts",
-                color = CoffeeAccent,
+                color = MaterialTheme.colorScheme.tertiary,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium
             )
             Text(
                 text = history.dateTime,
-                color = TextSecondaryGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp
             )
         }

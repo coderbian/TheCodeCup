@@ -22,6 +22,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,10 +39,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.thecodecup.ui.theme.BackgroundPrimary
-import com.example.thecodecup.ui.theme.ButtonPrimary
-import com.example.thecodecup.ui.theme.TextPrimaryDark
-import com.example.thecodecup.ui.theme.TextSecondaryGray
 
 /**
  * Placeholder VN address picker (static data).
@@ -83,16 +80,20 @@ fun AddressPickerScreen(navController: NavController) {
     var showMissingDialog by remember { mutableStateOf(false) }
 
     Scaffold(
-        containerColor = BackgroundPrimary,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Choose address", fontWeight = FontWeight.Bold, color = TextPrimaryDark) },
+                title = { Text("Choose address", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimaryDark)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         }
     ) { paddingValues ->
@@ -105,11 +106,11 @@ fun AddressPickerScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Vietnam address (placeholder)", color = TextSecondaryGray, fontSize = 13.sp)
+                    Text("Vietnam address (placeholder)", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
 
                     Column {
                         OutlinedTextField(
@@ -118,7 +119,11 @@ fun AddressPickerScreen(navController: NavController) {
                             readOnly = true,
                             label = { Text("Province/City") },
                             trailingIcon = {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = TextSecondaryGray)
+                                Icon(
+                                    Icons.Default.ArrowDropDown,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -150,7 +155,11 @@ fun AddressPickerScreen(navController: NavController) {
                             enabled = province.isNotBlank(),
                             label = { Text("District") },
                             trailingIcon = {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = TextSecondaryGray)
+                                Icon(
+                                    Icons.Default.ArrowDropDown,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -181,7 +190,11 @@ fun AddressPickerScreen(navController: NavController) {
                             enabled = district.isNotBlank(),
                             label = { Text("Ward") },
                             trailingIcon = {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = TextSecondaryGray)
+                                Icon(
+                                    Icons.Default.ArrowDropDown,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -225,9 +238,9 @@ fun AddressPickerScreen(navController: NavController) {
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = ButtonPrimary)
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("Use this address", color = Color.White, fontWeight = FontWeight.Medium)
+                Text("Use this address", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Medium)
             }
         }
 

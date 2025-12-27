@@ -64,9 +64,14 @@ object DataManager {
 
     // Redeemable items
     val redeemableItems = listOf(
-        RedeemableItem("1", "Cafe Latte", 180, "04.07.26"),
-        RedeemableItem("2", "Flat White", 180, "04.07.26"),
-        RedeemableItem("3", "Cappuccino", 180, "04.07.26")
+        RedeemableItem("1", "Americano", 180, "05.10.25"),
+        RedeemableItem("2", "Cappuccino", 180, "05.10.25"),
+        RedeemableItem("3", "Mocha", 180, "05.10.25"),
+        RedeemableItem("4", "Flat White", 180, "05.10.25"),
+        RedeemableItem("5", "Espresso", 180, "05.10.25"),
+        RedeemableItem("6", "Latte", 180, "05.10.25"),
+        RedeemableItem("7", "Macchiato", 180, "05.10.25"),
+        RedeemableItem("8", "Affogato", 180, "05.10.25")
     )
 
     // User profile
@@ -103,7 +108,22 @@ object DataManager {
     }
 
     fun addToCart(item: CartItem) {
-        cart.add(item)
+        // Merge same item (same coffee + options) instead of creating duplicate rows
+        val existingIndex = cart.indexOfFirst {
+            it.coffee.id == item.coffee.id &&
+                it.size == item.size &&
+                it.ice == item.ice &&
+                it.shot == item.shot
+        }
+        if (existingIndex != -1) {
+            val existing = cart[existingIndex]
+            cart[existingIndex] = existing.copy(
+                quantity = existing.quantity + item.quantity,
+                totalPrice = existing.totalPrice + item.totalPrice
+            )
+        } else {
+            cart.add(item)
+        }
         persistAsync()
     }
 

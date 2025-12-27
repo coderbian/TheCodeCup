@@ -57,13 +57,13 @@ fun MyOrdersScreen(navController: NavController) {
     }
 
     Scaffold(
-        containerColor = BackgroundPrimary,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text("My Order", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BackgroundPrimary,
-                    titleContentColor = TextPrimaryDark
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
@@ -78,8 +78,8 @@ fun MyOrdersScreen(navController: NavController) {
             // Tab Row
             TabRow(
                 selectedTabIndex = selectedTabIndex,
-                containerColor = BackgroundPrimary,
-                contentColor = ButtonPrimary
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.primary
             ) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
@@ -104,7 +104,7 @@ fun MyOrdersScreen(navController: NavController) {
                             1 -> "No ongoing orders"
                             else -> "No order history"
                         },
-                        color = TextSecondaryGray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp
                     )
                 }
@@ -139,11 +139,19 @@ fun OrderItemCard(
     showConfirmButton: Boolean,
     onConfirmReceived: () -> Unit
 ) {
-    val titleColor = if (isHistory) TextPrimaryDark.copy(alpha = 0.70f) else TextPrimaryDark
-    val secondaryColor = if (isHistory) TextSecondaryGray.copy(alpha = 0.70f) else TextSecondaryGray
+    val titleColor = if (isHistory) {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.70f)
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    val secondaryColor = if (isHistory) {
+        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.70f)
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = CardLightGray),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -175,10 +183,10 @@ fun OrderItemCard(
             // Small status UI (for Waiting/On going)
             if (!isHistory) {
                 val (statusText, statusColor) = when (order.status) {
-                    OrderStatus.WAITING_PICKUP -> "Waiting pickup (≈2s)" to TextSecondaryGray
-                    OrderStatus.ONGOING -> "Delivering (≈3s)" to CoffeeAccent
-                    OrderStatus.DELIVERED -> "Delivered - please confirm" to ButtonPrimary
-                    OrderStatus.COMPLETED -> "Completed" to TextSecondaryGray
+                    OrderStatus.WAITING_PICKUP -> "Waiting pickup (≈2s)" to MaterialTheme.colorScheme.onSurfaceVariant
+                    OrderStatus.ONGOING -> "Delivering (≈3s)" to MaterialTheme.colorScheme.tertiary
+                    OrderStatus.DELIVERED -> "Delivered - please confirm" to MaterialTheme.colorScheme.primary
+                    OrderStatus.COMPLETED -> "Completed" to MaterialTheme.colorScheme.onSurfaceVariant
                 }
                 Text(
                     text = statusText,
@@ -198,8 +206,8 @@ fun OrderItemCard(
                 LinearProgressIndicator(
                     progress = { progress },
                     modifier = Modifier.fillMaxWidth(),
-                    color = if (order.status == OrderStatus.DELIVERED) ButtonPrimary else CoffeeAccent,
-                    trackColor = Color.White
+                    color = if (order.status == OrderStatus.DELIVERED) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
+                    trackColor = MaterialTheme.colorScheme.surface
                 )
                 Spacer(modifier = Modifier.height(10.dp))
             }
@@ -256,13 +264,13 @@ fun OrderItemCard(
                     modifier = Modifier.fillMaxWidth().height(44.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = ButtonPrimary,
-                        disabledContainerColor = ButtonPrimary.copy(alpha = 0.35f)
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
                     )
                 ) {
                     Text(
                         text = if (order.status == OrderStatus.DELIVERED) "Confirm received" else "Waiting for delivery…",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Medium,
                         fontSize = 13.sp
                     )

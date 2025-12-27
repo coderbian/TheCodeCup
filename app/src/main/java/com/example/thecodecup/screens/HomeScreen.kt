@@ -35,14 +35,14 @@ import com.example.thecodecup.ui.theme.*
 @Composable
 fun HomeScreen(navController: NavController) {
     Scaffold(
-        containerColor = BackgroundPrimary,
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = { BottomNavBar(navController, currentRoute = Screen.Home.route) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(BackgroundPrimary)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(horizontal = 20.dp)
                 .padding(top = 20.dp, bottom = 20.dp)
         ) {
@@ -74,7 +74,6 @@ fun HomeScreen(navController: NavController) {
 @Composable
 fun HeaderSection(navController: NavController) {
     val profile by DataManager.userProfile
-    val isDarkMode by DataManager.isDarkMode
     
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -82,8 +81,13 @@ fun HeaderSection(navController: NavController) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text("Good morning", color = TextSecondaryGray, fontSize = 14.sp)
-            Text(profile.fullName, color = TextPrimaryDark, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text("Good morning", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+            Text(
+                profile.fullName,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -94,7 +98,7 @@ fun HeaderSection(navController: NavController) {
                     painter = painterResource(id = R.drawable.shopping_card_icon),
                     contentDescription = "Cart",
                     modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(IconActive)
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
             }
             // Profile button
@@ -103,7 +107,7 @@ fun HeaderSection(navController: NavController) {
                     painter = painterResource(id = R.drawable.profile_icon),
                     contentDescription = "Profile",
                     modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(IconActive)
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
             }
         }
@@ -120,7 +124,7 @@ fun CoffeeGridSection(
 
     // Dark blue container (like loyalty card)
     Card(
-        colors = CardDefaults.cardColors(containerColor = CardDarkBlue),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         shape = RoundedCornerShape(20.dp),
         modifier = modifier
     ) {
@@ -132,7 +136,7 @@ fun CoffeeGridSection(
             // Title - WHITE text on dark background
             Text(
                 "Choose your coffee",
-                color = TextOnDarkSurface,
+                color = MaterialTheme.colorScheme.onSecondary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )

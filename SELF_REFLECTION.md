@@ -9,8 +9,12 @@
 
 ## Liệt kê những điều thú vị, trick, tips, ... mà tôi tìm thấy trong quá trình làm project này
 - Một trong những đam mê của em là thiết kế giao diện, em có đi xem ý tưởng của mấy app đặt đồ uống khác, em cũng tự vẽ figma một số icons -> em thấy việc vẽ như vậy khá thú vị ạ
-- 
+- Em thấy việc chỉnh ngồi chỉnh mấy cái UI components khá vui, với khi test trên các kích thước màn hình khác nhau đôi khi nó có chút khác nhưng mà sửa cũng dễ
+- Tính năng darkmode được em bổ sung thêm
+- Ở phần My Order, em chia ra 3 trạng thái thay vì 2, lần lượt là "Waiting", "On going", "History", em thấy việc chia ra như vậy sẽ giúp người dùng dễ dàng theo dõi trạng thái đơn hàng của mình, đồng thời người dùng chỉ được xác nhận đơn hàng khi đã nhận được hàng.
 
 ## Khó khăn mà tôi đã gặp phải và cách giải quyết
+- Khó khăn lớn nhất là việc chưa thành thạo ngôn ngữ Kotlin cũng như còn chưa biết nhiều về Mobile Dev khiến có những phần em muốn thử nhưng chưa dám đặt tay vào làm: em muốn thêm tính năng tự lấy địa chỉ, AI gợi ý món phù hợp với mùa, lời chào được thay đổi theo giờ trong ngày, ...
+- Em chưa rành về việc xin cấp quyền của Android, cũng như việc thiết kế Databases, hiện tại em chỉ lưu Room Databases trong các files json
 
 ## Tôi có thể cải thiện điều gì?

@@ -1,182 +1,247 @@
 # The Code Cup
 
-A Jetpack Compose Android app for a fictional coffee shop. Users can browse drinks, view details, customize options, add items to cart, checkout, track their orders, and earn rewards through a loyalty program.
+The Code Cup is an Android (Jetpack Compose) coffee-shop app built for an academic midterm.  
+It supports browsing drinks, customizing options, adding to cart, checkout with shipping + payment,
+order tracking with simulated delivery steps, and a rewards/loyalty program.
 
-## Tech stack
-- Kotlin + Jetpack Compose + Material 3
+This repo has grown significantly since the initial version: data is now persisted across app restarts,
+the UI is componentized, and dark/light theme switching is applied across the app using Material 3.
+
+---
+
+## Features
+
+### Coffee browsing & details
+- 8 drinks in menu: Americano, Cappuccino, Mocha, Flat White, Espresso, Latte, Macchiato, Affogato
+- Details customization:
+  - Size: S / M / L
+  - Shot: Single / Double
+  - Hot / Cold select
+  - Ice level icons (ice_1/2/3)
+  - Quantity selector
+- Dynamic price calculation based on selections
+
+### Cart
+- Add-to-cart from Details
+- **Auto-merge duplicated items**:
+  - If you add the same drink with the same options (size/shot/ice), it increases quantity instead of creating another row
+- Swipe-to-delete gesture
+- Total price calculation
+
+### Checkout (Shipping + Payment)
+- Shipping info:
+  - Receiver name + phone
+  - Shipping address
+  - “Change” opens Address Picker (placeholder VN list)
+- Payment method:
+  - Cash
+  - Bank transfer
+  - Card
+
+### Address Picker (placeholder)
+- Province → District → Ward + detail street
+- Uses static sample data now; designed so it can be replaced by a network API later
+
+### Orders (3 stages)
+- Tabs: Waiting / On going / History
+- Order simulation (foreground-only for simplicity):
+  - Waiting pickup → after 2s → On going
+  - On going → after 3s → Delivered (ready to confirm)
+- In-app notification:
+  - Snackbar appears when an order becomes “Delivered”
+- Confirmation gating:
+  - User can only confirm receipt when status is Delivered
+- History styling:
+  - Completed orders are displayed with lighter/muted text
+
+### Rewards & loyalty
+- Loyalty stamps:
+  - 8 stamps system
+  - Stamps increase when user confirms receipt (delivered → completed)
+- Reward points:
+  - Points calculated based on quantity of drinks in the order
+- Reward history:
+  - Shows: drink name + quantity, points earned, date/time
+- Redeem:
+  - Redeem list uses real drink images
+  - Buttons disabled if not enough points
+
+### Profile
+- Editable user profile:
+  - Full name, phone, email, address
+- Used to pre-fill Checkout shipping fields (default address)
+
+### Settings
+- Dark/Light toggle (custom UI switch + icon changes)
+  - Uses `moon.xml` and `sun.xml` icons (theme-dependent)
+- Notifications toggle (in-app flag)
+- Clear all data (manual reset)
+  - Confirm dialog required
+  - Clears: cart, orders, rewards, profile, settings persisted state
+
+### Theme / Dark mode
+- Global Material 3 theme with Light + Dark schemes
+- Refactored screens/components to use:
+  - `MaterialTheme.colorScheme.background/surface/onSurface/...`
+  - avoids hard-coded `Color.White` style values
+
+## Tech Stack
+
+- Kotlin
+- Jetpack Compose (Material 3)
 - Navigation Compose
-- Simple in-memory data manager for menu, cart, order history, and rewards system
+- Data persistence:
+  - DataStore Preferences
+  - Gson (JSON serialization)
+
+## Screens & Navigation
+
+Routes are defined in:
+- `app/src/main/java/com/example/thecodecup/Screens.kt`
+
+NavHost setup in:
+- `app/src/main/java/com/example/thecodecup/MainActivity.kt`
+
+Main screens: Splash, Home, Details, Cart, Checkout, Address Picker, Order Success, My Orders, Rewards, Redeem, Profile, Settings.
+
+## Data Persistence (DataStore)
+
+Why DataStore:
+- Very lightweight for midterm requirements
+- No DB schema/migrations needed
+- Works well with a single persisted snapshot pattern
+
+Implementation:
+- `PersistedAppState` (single state object)
+- Stored as JSON string in DataStore Preferences
+- `DataManager.persistAsync()` saves after important mutations
+
+Key behavior:
+- App restart keeps all data
+- Data is only cleared manually through Settings → Clear all data
+
+Files:
+- `app/src/main/java/com/example/thecodecup/data/PersistedAppState.kt`
+- `app/src/main/java/com/example/thecodecup/data/AppDataStore.kt`
+
+## Rewards & Loyalty (Rules)
+
+- Loyalty stamps:
+  - increment when user confirms receipt for an order
+- Reward points:
+  - calculated using the total quantity of items in the order
+- Reward history:
+  - one entry per coffee type in the order (with its quantity)
+
+## Orders: 3-Stage Simulation + Confirmation
+
+Statuses:
+- WAITING_PICKUP
+- ONGOING
+- DELIVERED
+- COMPLETED (History)
+
+Timing (foreground-only):
+- +2s: WAITING_PICKUP → ONGOING
+- +3s: ONGOING → DELIVERED
+
+User action:
+- Only DELIVERED orders can be confirmed (DELIVERED → COMPLETED)
+
+In-app notification:
+- Snackbar shown when order reaches DELIVERED
+
+## Assets (Icons/Images)
+
+Coffee images (PNG): `americano`, `cappuccino`, `mocha`, `flat_white`, `expresso`, `latte`, `macchiato`, `affogato`.
+
+UI icons (VectorDrawable XML):
+- Bottom nav: `store_icon.xml`, `gift_icon.xml`, `bill_icon.xml`, `settings_icon.xml`, `profile_icon.xml`
+- Theme: `moon.xml`, `sun.xml`
+- Details: `cup_size.xml`, `hot_icon.xml`, `cold_icon.xml`, `ice_1.xml`, `ice_2.xml`, `ice_3.xml`
+
+Splash background:
+- `landing.jpeg`
+
+Order success image:
+- `take_away.png`
+  - Note: PNG tinting is limited; use `ColorFilter.tint` for simple overlay tint or convert to VectorDrawable if needed
 
 ## Project Structure
 
 ```
 app/src/main/java/com/example/thecodecup/
-├── MainActivity.kt          # Main entry point & NavHost setup
-├── Screens.kt              # Navigation routes definition
+├── MainActivity.kt
+├── Screens.kt
+├── data/
+│   ├── AppDataStore.kt
+│   └── PersistedAppState.kt
 ├── model/
-│   ├── Coffee.kt           # Coffee and CartItem data classes
-│   ├── Order.kt             # Order and OrderStatus enum
-│   ├── Reward.kt            # RewardHistory and RedeemableItem data classes
-│   ├── User.kt              # UserProfile data class
-│   └── DataManager.kt       # Singleton data manager with business logic
+│   ├── Coffee.kt
+│   ├── DataManager.kt
+│   ├── Order.kt
+│   ├── Reward.kt
+│   └── User.kt
 ├── screens/
-│   ├── SplashScreen.kt
-│   ├── HomeScreen.kt
-│   ├── DetailsScreen.kt
+│   ├── AddressPickerScreen.kt
 │   ├── CartScreen.kt
-│   ├── OrderSuccessScreen.kt
+│   ├── CheckoutScreen.kt
+│   ├── DetailsScreen.kt
+│   ├── HomeScreen.kt
 │   ├── MyOrdersScreen.kt
-│   ├── RewardsScreen.kt
+│   ├── OrderSuccessScreen.kt
+│   ├── ProfileScreen.kt
 │   ├── RedeemScreen.kt
-│   └── ProfileScreen.kt
+│   ├── RewardsScreen.kt
+│   ├── SettingsScreen.kt
+│   └── SplashScreen.kt
 └── ui/
-    └── theme/
-        ├── Color.kt        # Theme colors
-        ├── Theme.kt        # Material3 theme configuration
-        └── Type.kt         # Typography
+    ├── components/
+    │   ├── BottomNavBar.kt
+    │   ├── CoffeeCard.kt
+    │   └── LoyaltyCard.kt
+    ├── theme/
+    │   ├── Color.kt
+    │   ├── Theme.kt
+    │   └── Type.kt
+    └── utils/
+        └── ImageUtils.kt
 ```
 
-## Screens
+## Build & Run
 
-### 1. Splash Screen
-- App logo and branding
-- Auto-navigates to Home after 2 seconds
+Requirements:
+- Android Studio (Giraffe+ recommended)
+- Android device/emulator (minSdk 24)
 
-### 2. Home Screen
-- **Header**: Greeting and user info
-- **Loyalty Card**: Progress tracking (8 stamps system)
-  - Displays current stamps from DataManager (reactive)
-  - Clickable to reset when reaching 8 stamps
-- **Coffee Grid**: Browse available coffee items
-- **Bottom Navigation**: Home, Rewards, My Orders, Profile
+Steps:
+1. Open project in Android Studio
+2. Sync Gradle
+3. Run on emulator/device
 
-### 3. Details Screen
-- Coffee item details
-- **Customization Options**:
-  - Size selection (S/M/L)
-  - Shot selection (Single/Double)
-  - Ice level
-  - Quantity selector
-- Dynamic price calculation based on selections
-- Add to cart functionality
+## Troubleshooting
 
-### 4. Cart Screen
-- List of cart items with details
-- **Swipe-to-delete** gesture for item removal
-- Total price calculation
-- **Checkout**: Creates order and navigates to Order Success
-  - Order is created with ONGOING status
+### 1) Kotlin daemon / compile daemon errors
+- Try: **Invalidate Caches / Restart**
+- Ensure Gradle sync finished successfully
 
-### 5. Order Success Screen
-- Confirmation message after successful checkout
-- Success icon and description
-- **Track My Order** button: Navigates to My Orders screen
+### 2) Dark mode doesn’t change some screens
+- Screen is likely still using hard-coded colors
+- Fix by using `MaterialTheme.colorScheme.*` instead of constants like `Color.White`
 
-### 6. My Orders Screen
-- **Tab Navigation**: 
-  - "On going": Active orders
-  - "History": Completed orders
-- **Order List Display**:
-  - Date and time
-  - Total price
-  - Coffee items with icons
-  - Delivery address
-- **Order Status Transition**: Click on ongoing orders to mark as completed
-  - Automatically increments loyalty stamps (+1 per completed order)
-  - Automatically awards reward points (+12 points per completed order)
-  - Adds entry to reward history
-- Bottom navigation bar integration
+### 3) Icons don’t tint
+- VectorDrawable XML can be tinted easily
+- PNG tint is limited; use `ColorFilter.tint` or convert to vector
 
-### 7. Rewards Screen
-- **Loyalty Card Section**: 
-  - Displays current stamps (0-8) from DataManager
-  - Clickable to reset stamps when reaching 8
-- **My Points Section**: 
-  - Shows total accumulated reward points
-  - "Redeem drinks" button navigates to Redeem screen
-- **History Rewards Section**: 
-  - Lists all reward history entries
-  - Shows coffee name, points earned (+12 Pts), and date/time
-- Bottom navigation bar integration
+## Roadmap (Optional / Future)
 
-### 8. Redeem Screen
-- **Redeemable Items List**: 
-  - Displays available items for redemption (Cafe Latte, Flat White, Cappuccino)
-  - Each item shows: image, name, validity date, and points required (180 pts)
-- **Redemption Logic**: 
-  - Button enabled only when user has sufficient points
-  - Deducts points from total when redeemed
-  - Navigates back to Rewards screen after successful redemption
+- Replace placeholder address data with a Vietnam provinces API
+- Persist timers more accurately (background scheduling / WorkManager)
+- Migrate persistence from JSON snapshot → Room for orders/cart tables
+- Add search/filter + favorites
+- Improve redemption UX (snackbar feedback, redeemed history)
 
-### 9. Profile Screen
-- **Profile Information Display**:
-  - Full name, Phone number, Email, Address
-  - Each field has an icon and edit button
-- **Edit Functionality**:
-  - Click edit icon to enter edit mode
-  - Inline editing with text fields
-  - Save/Cancel buttons
-  - Address field supports multiline input
-- Bottom navigation bar integration
+## Credits
 
-## Data Models
-
-The project uses a modular data model structure with separate files for each domain:
-
-### Coffee.kt
-- **Coffee**: `id`, `name`, `basePrice`, `description`
-- **CartItem**: `coffee`, `size`, `ice`, `shot`, `quantity`, `totalPrice`
-
-### Order.kt
-- **OrderStatus**: Enum (ONGOING, COMPLETED)
-- **Order**: `id`, `dateTime`, `items`, `totalPrice`, `status`, `address`
-
-### Reward.kt
-- **RewardHistory**: `id`, `coffeeName`, `quantity`, `points`, `dateTime`
-- **RedeemableItem**: `id`, `name`, `pointsRequired`, `validUntil`
-
-### User.kt
-- **UserProfile**: `fullName`, `phoneNumber`, `email`, `address`
-
-### DataManager.kt (Singleton)
-
-- Menu management
-- Cart operations (add, remove, clear, get total)
-- Order management (add, get ongoing/completed, update status)
-- **Rewards System**:
-  - Loyalty stamps tracking (0-8, auto-increment on order completion)
-  - Total points tracking (auto-increment +12 points per completed order)
-  - Reward history management
-  - Points redemption (deduct points for redeemable items)
-  - Auto-reset stamps when reaching 8 (clickable on card)
-
-## Key Features
-
-- ✅ Coffee browsing and customization
-- ✅ Shopping cart with swipe-to-delete
-- ✅ Order placement and confirmation
-- ✅ Order history with status tracking
-- ✅ **Loyalty Card System**:
-  - 8-stamp progress tracking
-  - Auto-increment on order completion
-  - Click to reset when full
-- ✅ **Rewards System**:
-  - Points earned per completed order (+12 points)
-  - Reward history tracking
-  - Points redemption for drinks (180 points per item)
-  - Redeemable items: Cafe Latte, Flat White, Cappuccino
-- ✅ Bottom navigation for main screens (Home, Rewards, My Orders, Profile)
-- ✅ **Profile Management**:
-  - User profile display and editing
-  - Inline editing with save/cancel functionality
-- ✅ Material 3 design following Figma specifications
-
-## Build & run
-1. Open the project in Android Studio (Giraffe+).
-2. Connect a device/emulator running Android 8.0+.
-3. Click **Run**. Compose preview works for UI iteration.
-
-## Notes
-- Light theme palette follows provided Figma (blue CTAs, dark card panels, coffee accent).
-- No backend; data resets when the app restarts (in-memory storage).
-- Navigation uses Jetpack Navigation Compose with type-safe routes.
+- Built with Kotlin + Jetpack Compose (Material 3)
+- Design guided by teacher/Figma requirements (midterm project)

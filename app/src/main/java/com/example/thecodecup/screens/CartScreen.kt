@@ -35,17 +35,21 @@ fun CartScreen(navController: NavController) {
     val totalAmount = DataManager.getCartTotal() // Total Price Display
 
     Scaffold(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("My Cart", fontWeight = FontWeight.Bold, color = TextPrimaryDark) },
+                title = { Text("My Cart", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimaryDark)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
@@ -76,8 +80,13 @@ fun CartScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Total Price", fontSize = 16.sp, color = TextSecondaryGray)
-                    Text("$${String.format("%.2f", totalAmount)}", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
+                    Text("Total Price", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        "$${String.format("%.2f", totalAmount)}",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
@@ -88,18 +97,23 @@ fun CartScreen(navController: NavController) {
                         }
                     },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = ButtonPrimary),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     enabled = cartItems.isNotEmpty(),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ShoppingCart,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Checkout", fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Medium)
+                    Text(
+                        "Checkout",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }
@@ -140,7 +154,7 @@ fun SwipeToDeleteItem(item: CartItem, onDelete: () -> Unit) {
     ) {
         // Cart Item Card
         Card(
-            colors = CardDefaults.cardColors(containerColor = CardLightGray),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -154,7 +168,7 @@ fun SwipeToDeleteItem(item: CartItem, onDelete: () -> Unit) {
                     modifier = Modifier
                         .size(80.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color.White),
+                        .background(MaterialTheme.colorScheme.surface),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -172,13 +186,13 @@ fun SwipeToDeleteItem(item: CartItem, onDelete: () -> Unit) {
                 ) {
                     Text(
                         text = item.coffee.name,
-                        color = TextPrimaryDark,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
                     Text(
                         text = "${item.shot} | ${item.ice} | ${item.size} | full ice",
-                        color = TextSecondaryGray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp
                     )
                     Row(
@@ -188,13 +202,13 @@ fun SwipeToDeleteItem(item: CartItem, onDelete: () -> Unit) {
                     ) {
                         Text(
                             text = "x ${item.quantity}",
-                            color = TextPrimaryDark,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
                         Text(
                             text = "$${String.format("%.2f", item.totalPrice)}",
-                            color = TextPrimaryDark,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )

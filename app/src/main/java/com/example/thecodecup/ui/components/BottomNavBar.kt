@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -20,22 +21,23 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.thecodecup.R
 import com.example.thecodecup.Screen
-import com.example.thecodecup.ui.theme.CardWhite
-import com.example.thecodecup.ui.theme.IconActive
-import com.example.thecodecup.ui.theme.IconInactive
 
 @Composable
 fun BottomNavBar(
     navController: NavController,
     currentRoute: String? = null,
     modifier: Modifier = Modifier,
-    surfaceColor: Color = CardWhite,
+    surfaceColor: Color? = null,
     shadowElevation: Dp = 8.dp,
     shape: Shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
 ) {
+    val active = MaterialTheme.colorScheme.primary
+    val inactive = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.60f)
+    val surface = surfaceColor ?: MaterialTheme.colorScheme.surface
+
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = surfaceColor,
+        color = surface,
         shape = shape,
         shadowElevation = shadowElevation
     ) {
@@ -51,7 +53,7 @@ fun BottomNavBar(
                         contentDescription = "Home",
                         modifier = Modifier.size(24.dp),
                         colorFilter = ColorFilter.tint(
-                            if (currentRoute == Screen.Home.route) IconActive else IconInactive
+                            if (currentRoute == Screen.Home.route) active else inactive
                         )
                     )
                 },
@@ -63,8 +65,8 @@ fun BottomNavBar(
                 },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color.Transparent,
-                    selectedIconColor = IconActive,
-                    unselectedIconColor = IconInactive
+                    selectedIconColor = active,
+                    unselectedIconColor = inactive
                 )
             )
 
@@ -76,7 +78,7 @@ fun BottomNavBar(
                         contentDescription = "Rewards",
                         modifier = Modifier.size(24.dp),
                         colorFilter = ColorFilter.tint(
-                            if (currentRoute == Screen.Rewards.route) IconActive else IconInactive
+                            if (currentRoute == Screen.Rewards.route) active else inactive
                         )
                     )
                 },
@@ -88,8 +90,8 @@ fun BottomNavBar(
                 },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color.Transparent,
-                    selectedIconColor = IconActive,
-                    unselectedIconColor = IconInactive
+                    selectedIconColor = active,
+                    unselectedIconColor = inactive
                 )
             )
 
@@ -101,7 +103,7 @@ fun BottomNavBar(
                         contentDescription = "My Orders",
                         modifier = Modifier.size(24.dp),
                         colorFilter = ColorFilter.tint(
-                            if (currentRoute == Screen.MyOrders.route) IconActive else IconInactive
+                            if (currentRoute == Screen.MyOrders.route) active else inactive
                         )
                     )
                 },
@@ -113,8 +115,8 @@ fun BottomNavBar(
                 },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color.Transparent,
-                    selectedIconColor = IconActive,
-                    unselectedIconColor = IconInactive
+                    selectedIconColor = active,
+                    unselectedIconColor = inactive
                 )
             )
 
@@ -126,7 +128,7 @@ fun BottomNavBar(
                         contentDescription = "Settings",
                         modifier = Modifier.size(24.dp),
                         colorFilter = ColorFilter.tint(
-                            if (currentRoute == Screen.Settings.route) IconActive else IconInactive
+                            if (currentRoute == Screen.Settings.route) active else inactive
                         )
                     )
                 },
@@ -138,8 +140,8 @@ fun BottomNavBar(
                 },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color.Transparent,
-                    selectedIconColor = IconActive,
-                    unselectedIconColor = IconInactive
+                    selectedIconColor = active,
+                    unselectedIconColor = inactive
                 )
             )
         }
