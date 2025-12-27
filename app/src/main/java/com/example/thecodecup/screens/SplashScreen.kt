@@ -1,4 +1,4 @@
-package com.example.thecodecup.ui.screens
+package com.example.thecodecup.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -21,7 +21,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(navController: NavController) {
     LaunchedEffect(key1 = true) {
-        delay(2000) // Đợi 2 giây
+        delay(500) // Đợi 2 giây
         navController.navigate(Screen.Home.route) {
             popUpTo(Screen.Splash.route) { inclusive = true }
         }

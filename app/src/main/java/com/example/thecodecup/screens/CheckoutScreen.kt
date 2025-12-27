@@ -213,7 +213,7 @@ fun CheckoutScreen(navController: NavController) {
                                 dateTime = DataManager.formatOrderDateTime(),
                                 items = cartItems.toList(),
                                 totalPrice = totalAmount,
-                                status = OrderStatus.ONGOING,
+                                status = OrderStatus.WAITING_PICKUP,
                                 receiverName = receiverName.trim(),
                                 receiverPhone = receiverPhone.trim(),
                                 shippingAddress = address.trim(),

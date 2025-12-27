@@ -49,8 +49,8 @@ fun RewardsScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Loyalty Card Section
             LoyaltyCard(
@@ -69,7 +69,7 @@ fun RewardsScreen(navController: NavController) {
             // History Rewards Section
             Text(
                 text = "History Rewards",
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimaryDark
             )
@@ -78,7 +78,7 @@ fun RewardsScreen(navController: NavController) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
+                        .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -89,7 +89,7 @@ fun RewardsScreen(navController: NavController) {
                 }
             } else {
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(rewardHistory.reversed()) { history ->
                         RewardHistoryItem(history = history)
@@ -145,7 +145,7 @@ fun RewardHistoryItem(history: RewardHistory) {
         Text(
             text = "${history.coffeeName} x${history.quantity}",
             color = TextPrimaryDark,
-            fontSize = 16.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
         Row(
@@ -155,7 +155,7 @@ fun RewardHistoryItem(history: RewardHistory) {
             Text(
                 text = "+ ${history.points} Pts",
                 color = CoffeeAccent,
-                fontSize = 14.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Medium
             )
             Text(

@@ -7,7 +7,10 @@ import com.example.thecodecup.data.AppDataStore
 import com.example.thecodecup.data.PersistedAppState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -18,6 +21,12 @@ object DataManager {
     private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var store: AppDataStore? = null
     private var hasInitialized = false
+    private val orderSimulationJobs = mutableMapOf<String, Job>()
+
+    /**
+     * In-app delivery events (orderId). MyOrdersScreen can collect this and show a Snackbar.
+     */
+    val orderDeliveredEvents = MutableSharedFlow<String>(extraBufferCapacity = 16)
 
     private val defaultProfile = UserProfile(
         fullName = "Hieu-Hoc Tran Minh",
@@ -115,14 +124,19 @@ object DataManager {
     fun addOrder(order: Order) {
         orders.add(order)
         persistAsync()
+        startOrderSimulationIfNeeded(order.id)
     }
 
     fun getOngoingOrders(): List<Order> {
-        return orders.filter { it.status == OrderStatus.ONGOING }
+        return orders.filter { it.status == OrderStatus.ONGOING || it.status == OrderStatus.DELIVERED }
     }
 
     fun getCompletedOrders(): List<Order> {
         return orders.filter { it.status == OrderStatus.COMPLETED }
+    }
+
+    fun getWaitingPickupOrders(): List<Order> {
+        return orders.filter { it.status == OrderStatus.WAITING_PICKUP }
     }
 
     fun updateOrderStatus(orderId: String, status: OrderStatus) {
@@ -133,7 +147,7 @@ object DataManager {
             orders[orderIndex] = order.copy(status = status)
             
             // If order is being completed, add rewards
-            if (oldStatus == OrderStatus.ONGOING && status == OrderStatus.COMPLETED) {
+            if (oldStatus == OrderStatus.DELIVERED && status == OrderStatus.COMPLETED) {
                 // Increment loyalty stamps
                 incrementLoyaltyStamps()
                 // Add reward points and history
@@ -141,6 +155,20 @@ object DataManager {
             }
             persistAsync()
         }
+    }
+
+    /**
+     * Only allow confirmation when the order has reached DELIVERED.
+     */
+    fun confirmDelivered(orderId: String): Boolean {
+        val orderIndex = orders.indexOfFirst { it.id == orderId }
+        if (orderIndex == -1) return false
+        val order = orders[orderIndex]
+        if (order.status != OrderStatus.DELIVERED) return false
+        updateOrderStatus(orderId, OrderStatus.COMPLETED)
+        // cleanup any timers
+        orderSimulationJobs.remove(orderId)?.cancel()
+        return true
     }
 
     // Helper function to format date/time
@@ -216,6 +244,38 @@ object DataManager {
 
         ioScope.launch {
             store?.clearAll()
+        }
+    }
+
+    private fun startOrderSimulationIfNeeded(orderId: String) {
+        val existing = orderSimulationJobs[orderId]
+        if (existing?.isActive == true) return
+
+        val order = orders.firstOrNull { it.id == orderId } ?: return
+        if (order.status != OrderStatus.WAITING_PICKUP) return
+
+        orderSimulationJobs[orderId]?.cancel()
+        orderSimulationJobs[orderId] = ioScope.launch {
+            // After 2s -> ONGOING
+            delay(2000)
+            withContext(Dispatchers.Main) {
+                val idx = orders.indexOfFirst { it.id == orderId }
+                if (idx != -1 && orders[idx].status == OrderStatus.WAITING_PICKUP) {
+                    orders[idx] = orders[idx].copy(status = OrderStatus.ONGOING)
+                    persistAsync()
+                }
+            }
+
+            // After 3s more -> DELIVERED (ready to confirm)
+            delay(3000)
+            withContext(Dispatchers.Main) {
+                val idx = orders.indexOfFirst { it.id == orderId }
+                if (idx != -1 && orders[idx].status == OrderStatus.ONGOING) {
+                    orders[idx] = orders[idx].copy(status = OrderStatus.DELIVERED)
+                    persistAsync()
+                    orderDeliveredEvents.tryEmit(orderId)
+                }
+            }
         }
     }
 

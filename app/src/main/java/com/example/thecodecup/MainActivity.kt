@@ -9,11 +9,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.thecodecup.model.DataManager
-import com.example.thecodecup.screens.HomeScreen
-import com.example.thecodecup.ui.screens.SplashScreen
 import com.example.thecodecup.ui.theme.TheCodeCupTheme
-import com.example.thecodecup.ui.screens.DetailsScreen
-import com.example.thecodecup.ui.screens.CartScreen
+import com.example.thecodecup.screens.HomeScreen
+import com.example.thecodecup.screens.SplashScreen
+import com.example.thecodecup.screens.DetailsScreen
+import com.example.thecodecup.screens.CartScreen
 import com.example.thecodecup.screens.OrderSuccessScreen
 import com.example.thecodecup.screens.MyOrdersScreen
 import com.example.thecodecup.screens.RewardsScreen

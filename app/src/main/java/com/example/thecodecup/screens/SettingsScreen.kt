@@ -55,8 +55,8 @@ fun SettingsScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Profile Section
             Card(
@@ -65,15 +65,15 @@ fun SettingsScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(14.dp)
                 ) {
                     Text(
                         "Account",
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimaryDark
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     
                     // Profile Link
                     SettingsItem(
@@ -92,15 +92,15 @@ fun SettingsScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(14.dp)
                 ) {
                     Text(
                         "Appearance",
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimaryDark
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     
                     // Dark Mode Toggle with Custom Switch
                     DarkModeToggleItem(
@@ -117,15 +117,15 @@ fun SettingsScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(14.dp)
                 ) {
                     Text(
                         "Preferences",
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimaryDark
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     
                     // Notifications
                     SettingsItemWithSwitch(
@@ -136,7 +136,7 @@ fun SettingsScreen(navController: NavController) {
                         onCheckedChange = { DataManager.setNotificationsEnabled(it) }
                     )
                     
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = DividerColor)
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = DividerColor)
                     
                     // Location
                     SettingsItem(
@@ -156,22 +156,22 @@ fun SettingsScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(14.dp)
                 ) {
                     Text(
                         "Data",
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimaryDark
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
                             .clickable { showClearDataDialog = true }
-                            .padding(vertical = 10.dp, horizontal = 8.dp),
+                            .padding(vertical = 8.dp, horizontal = 6.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -184,18 +184,18 @@ fun SettingsScreen(navController: NavController) {
                                 imageVector = Icons.Default.DeleteOutline,
                                 contentDescription = null,
                                 tint = ErrorRed,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(22.dp)
                             )
                             Column {
                                 Text(
                                     "Clear all data",
-                                    fontSize = 15.sp,
+                                    fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = ErrorRed
                                 )
                                 Text(
                                     "Remove cart, orders, rewards, profile and settings",
-                                    fontSize = 13.sp,
+                                    fontSize = 12.sp,
                                     color = TextSecondaryGray
                                 )
                             }
@@ -204,7 +204,7 @@ fun SettingsScreen(navController: NavController) {
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint = TextSecondaryGray,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 }
@@ -278,13 +278,13 @@ fun SettingsItem(
             Column {
                 Text(
                     title,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = TextPrimaryDark
                 )
                 Text(
                     subtitle,
-                    fontSize = 13.sp,
+                    fontSize = 12.sp,
                     color = TextSecondaryGray
                 )
             }
@@ -332,13 +332,13 @@ fun SettingsItemWithSwitch(
             Column {
                 Text(
                     title,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = TextPrimaryDark
                 )
                 Text(
                     subtitle,
-                    fontSize = 13.sp,
+                    fontSize = 12.sp,
                     color = TextSecondaryGray
                 )
             }
@@ -387,13 +387,13 @@ fun DarkModeToggleItem(
             Column {
                 Text(
                     "Dark Mode",
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = TextPrimaryDark
                 )
                 Text(
                     if (isDarkMode) "Dark theme enabled" else "Light theme enabled",
-                    fontSize = 13.sp,
+                    fontSize = 12.sp,
                     color = TextSecondaryGray
                 )
             }

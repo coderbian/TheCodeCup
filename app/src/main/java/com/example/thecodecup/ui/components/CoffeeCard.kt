@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +27,7 @@ import com.example.thecodecup.ui.theme.CardWhite
 import com.example.thecodecup.ui.theme.TextPrimaryDark
 import com.example.thecodecup.ui.utils.getCoffeeImageResourceByName
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.widthIn
 
 @Composable
 fun CoffeeCard(
@@ -45,25 +45,32 @@ fun CoffeeCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                // Keep a tight inset so the gray image container can be almost full-width
+                .padding(6.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
         ) {
             Box(
                 modifier = Modifier
-                    .size(72.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .fillMaxWidth()
+                    // Fixed height makes all coffee previews feel consistent
+                    .height(92.dp)
+                    .clip(RoundedCornerShape(14.dp))
                     .background(BackgroundPrimary),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = painterResource(id = getCoffeeImageResourceByName(coffeeName)),
                     contentDescription = coffeeName,
-                    modifier = Modifier.size(60.dp),
-                    contentScale = ContentScale.Fit
+                    // Fill the container with consistent inner padding to normalize perceived size
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    contentScale = ContentScale.Fit,
+                    alignment = Alignment.Center
                 )
             }
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 coffeeName,
                 color = TextPrimaryDark,

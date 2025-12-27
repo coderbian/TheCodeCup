@@ -15,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,21 +26,33 @@ import com.example.thecodecup.model.Order
 import com.example.thecodecup.model.OrderStatus
 import com.example.thecodecup.ui.components.BottomNavBar
 import com.example.thecodecup.ui.theme.*
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyOrdersScreen(navController: NavController) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("On going", "History")
+    val tabs = listOf("Waiting", "On going", "History")
 
     // Watch DataManager.orders to react to changes
     val allOrders = DataManager.orders
-    
+
     val orders = remember(selectedTabIndex, allOrders) {
-        if (selectedTabIndex == 0) {
-            DataManager.getOngoingOrders()
-        } else {
-            DataManager.getCompletedOrders()
+        when (selectedTabIndex) {
+            0 -> DataManager.getWaitingPickupOrders()
+            1 -> DataManager.getOngoingOrders() // includes DELIVERED (ready to confirm)
+            else -> DataManager.getCompletedOrders()
+        }
+    }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        DataManager.orderDeliveredEvents.collectLatest {
+            snackbarHostState.showSnackbar(
+                message = "Your order has arrived. Please confirm receipt in On going.",
+                withDismissAction = true
+            )
         }
     }
 
@@ -54,7 +67,8 @@ fun MyOrdersScreen(navController: NavController) {
                 )
             )
         },
-        bottomBar = { BottomNavBar(navController, currentRoute = Screen.MyOrders.route) }
+        bottomBar = { BottomNavBar(navController, currentRoute = Screen.MyOrders.route) },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -71,7 +85,7 @@ fun MyOrdersScreen(navController: NavController) {
                     Tab(
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
-                        text = { Text(title) }
+                        text = { Text(title, fontSize = 13.sp) }
                     )
                 }
             }
@@ -81,30 +95,35 @@ fun MyOrdersScreen(navController: NavController) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(32.dp),
+                        .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (selectedTabIndex == 0) "No ongoing orders" else "No order history",
+                        text = when (selectedTabIndex) {
+                            0 -> "No waiting pickup orders"
+                            1 -> "No ongoing orders"
+                            else -> "No order history"
+                        },
                         color = TextSecondaryGray,
-                        fontSize = 16.sp
+                        fontSize = 14.sp
                     )
                 }
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(orders) { order ->
+                        val isHistory = selectedTabIndex == 2
                         OrderItemCard(
                             order = order,
-                            onClick = {
-                                if (selectedTabIndex == 0) {
-                                    // Transition from ONGOING to COMPLETED
-                                    DataManager.updateOrderStatus(order.id, OrderStatus.COMPLETED)
-                                }
-                            }
+                            isHistory = isHistory,
+                            onConfirmReceived = {
+                                // Only allowed when DELIVERED
+                                DataManager.confirmDelivered(order.id)
+                            },
+                            showConfirmButton = selectedTabIndex == 1
                         )
                     }
                 }
@@ -114,16 +133,23 @@ fun MyOrdersScreen(navController: NavController) {
 }
 
 @Composable
-fun OrderItemCard(order: Order, onClick: () -> Unit) {
+fun OrderItemCard(
+    order: Order,
+    isHistory: Boolean,
+    showConfirmButton: Boolean,
+    onConfirmReceived: () -> Unit
+) {
+    val titleColor = if (isHistory) TextPrimaryDark.copy(alpha = 0.70f) else TextPrimaryDark
+    val secondaryColor = if (isHistory) TextSecondaryGray.copy(alpha = 0.70f) else TextSecondaryGray
+
     Card(
         colors = CardDefaults.cardColors(containerColor = CardLightGray),
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(14.dp)
         ) {
             // Date and Time with Price
             Row(
@@ -133,18 +159,50 @@ fun OrderItemCard(order: Order, onClick: () -> Unit) {
             ) {
                 Text(
                     text = order.dateTime,
-                    color = TextSecondaryGray,
-                    fontSize = 14.sp
+                    color = secondaryColor,
+                    fontSize = 12.sp
                 )
                 Text(
                     text = "$${String.format("%.2f", order.totalPrice)}",
-                    color = TextPrimaryDark,
-                    fontSize = 18.sp,
+                    color = titleColor,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Small status UI (for Waiting/On going)
+            if (!isHistory) {
+                val (statusText, statusColor) = when (order.status) {
+                    OrderStatus.WAITING_PICKUP -> "Waiting pickup (≈2s)" to TextSecondaryGray
+                    OrderStatus.ONGOING -> "Delivering (≈3s)" to CoffeeAccent
+                    OrderStatus.DELIVERED -> "Delivered - please confirm" to ButtonPrimary
+                    OrderStatus.COMPLETED -> "Completed" to TextSecondaryGray
+                }
+                Text(
+                    text = statusText,
+                    color = statusColor,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Progress indicator
+                val progress = when (order.status) {
+                    OrderStatus.WAITING_PICKUP -> 0.33f
+                    OrderStatus.ONGOING -> 0.66f
+                    OrderStatus.DELIVERED -> 1f
+                    OrderStatus.COMPLETED -> 1f
+                }
+                LinearProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = if (order.status == OrderStatus.DELIVERED) ButtonPrimary else CoffeeAccent,
+                    trackColor = Color.White
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+            }
 
             // Coffee items
             order.items.forEach { item ->
@@ -155,20 +213,20 @@ fun OrderItemCard(order: Order, onClick: () -> Unit) {
                     Image(
                         painter = painterResource(id = getCoffeeImageResource(item.coffee)),
                         contentDescription = item.coffee.name,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(18.dp),
                         contentScale = ContentScale.Crop
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "${item.coffee.name} x${item.quantity}",
-                        color = TextPrimaryDark,
-                        fontSize = 16.sp,
+                        color = titleColor,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Medium
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Location
             Row(
@@ -178,15 +236,37 @@ fun OrderItemCard(order: Order, onClick: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = null,
-                    tint = TextSecondaryGray,
-                    modifier = Modifier.size(20.dp)
+                    tint = secondaryColor,
+                    modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = order.shippingAddress,
-                    color = TextSecondaryGray,
-                    fontSize = 14.sp
+                    color = secondaryColor,
+                    fontSize = 12.sp
                 )
+            }
+
+            // Confirm received (only show in On going tab)
+            if (showConfirmButton) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Button(
+                    onClick = onConfirmReceived,
+                    enabled = order.status == OrderStatus.DELIVERED,
+                    modifier = Modifier.fillMaxWidth().height(44.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ButtonPrimary,
+                        disabledContainerColor = ButtonPrimary.copy(alpha = 0.35f)
+                    )
+                ) {
+                    Text(
+                        text = if (order.status == OrderStatus.DELIVERED) "Confirm received" else "Waiting for delivery…",
+                        color = Color.White,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 13.sp
+                    )
+                }
             }
         }
     }

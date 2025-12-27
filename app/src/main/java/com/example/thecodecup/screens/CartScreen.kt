@@ -1,4 +1,4 @@
-package com.example.thecodecup.ui.screens
+package com.example.thecodecup.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

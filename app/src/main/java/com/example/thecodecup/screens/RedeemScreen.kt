@@ -90,7 +90,7 @@ fun RedeemableItemCard(
             Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .background(CoffeeBrown, CircleShape),
+                    .background(CoffeeAccent, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -115,7 +115,7 @@ fun RedeemableItemCard(
                 Text(
                     text = "Valid until ${item.validUntil}",
                     fontSize = 12.sp,
-                    color = TextGray
+                    color = TextSecondaryGray
                 )
             }
 
@@ -125,7 +125,7 @@ fun RedeemableItemCard(
                 enabled = totalPoints >= item.pointsRequired,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = ButtonPrimary,
-                    disabledContainerColor = TextGray
+                    disabledContainerColor = TextSecondaryGray
                 ),
                 shape = RoundedCornerShape(20.dp)
             ) {

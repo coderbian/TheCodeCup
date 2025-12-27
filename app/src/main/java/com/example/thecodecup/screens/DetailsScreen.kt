@@ -1,4 +1,4 @@
-package com.example.thecodecup.ui.screens
+package com.example.thecodecup.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

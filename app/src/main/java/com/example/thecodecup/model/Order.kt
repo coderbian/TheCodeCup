@@ -2,7 +2,9 @@ package com.example.thecodecup.model
 
 // Trạng thái đơn hàng
 enum class OrderStatus {
+    WAITING_PICKUP,
     ONGOING,
+    DELIVERED,
     COMPLETED
 }
 

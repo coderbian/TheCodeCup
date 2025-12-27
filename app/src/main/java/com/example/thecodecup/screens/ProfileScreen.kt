@@ -42,8 +42,8 @@ fun ProfileScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Full name
             ProfileFieldItem(
@@ -116,7 +116,7 @@ fun ProfileFieldItem(
     }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = SurfaceLight),
+        colors = CardDefaults.cardColors(containerColor = BackgroundPrimary),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -137,7 +137,7 @@ fun ProfileFieldItem(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = TextGray,
+                    tint = TextSecondaryGray,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -149,8 +149,8 @@ fun ProfileFieldItem(
             ) {
                 Text(
                     text = label,
-                    color = TextGray,
-                    fontSize = 14.sp
+                    color = TextSecondaryGray,
+                    fontSize = 13.sp
                 )
                 if (isEditing) {
                     if (isMultiline) {
@@ -160,7 +160,7 @@ fun ProfileFieldItem(
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = ButtonPrimary,
-                                unfocusedBorderColor = TextGray.copy(alpha = 0.5f)
+                                unfocusedBorderColor = TextSecondaryGray.copy(alpha = 0.5f)
                             ),
                             maxLines = 3
                         )
@@ -171,7 +171,7 @@ fun ProfileFieldItem(
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = ButtonPrimary,
-                                unfocusedBorderColor = TextGray.copy(alpha = 0.5f)
+                                unfocusedBorderColor = TextSecondaryGray.copy(alpha = 0.5f)
                             )
                         )
                     }
@@ -183,7 +183,7 @@ fun ProfileFieldItem(
                             editedValue = value
                             isEditing = false
                         }) {
-                            Text("Cancel", color = TextGray)
+                            Text("Cancel", color = TextSecondaryGray)
                         }
                         TextButton(onClick = {
                             onSave(editedValue)
@@ -196,7 +196,7 @@ fun ProfileFieldItem(
                     Text(
                         text = value,
                         color = TextPrimaryDark,
-                        fontSize = 16.sp,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -211,7 +211,7 @@ fun ProfileFieldItem(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit",
-                        tint = TextGray,
+                        tint = TextSecondaryGray,
                         modifier = Modifier.size(20.dp)
                     )
                 }
