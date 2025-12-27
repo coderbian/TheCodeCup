@@ -12,7 +12,11 @@ object DataManager {
         Coffee("1", "Americano", 3.0),
         Coffee("2", "Cappuccino", 3.5),
         Coffee("3", "Mocha", 4.0),
-        Coffee("4", "Flat White", 3.5)
+        Coffee("4", "Flat White", 3.5),
+        Coffee("5", "Espresso", 2.5),
+        Coffee("6", "Latte", 4.0),
+        Coffee("7", "Macchiato", 3.5),
+        Coffee("8", "Affogato", 4.5)
     )
 
     // Giỏ hàng (dùng mutableStateListOf để UI tự cập nhật khi list thay đổi)
@@ -47,8 +51,15 @@ object DataManager {
         )
     )
 
+    // Dark mode state
+    var isDarkMode = mutableStateOf(false)
+
     fun updateUserProfile(profile: UserProfile) {
         userProfile.value = profile
+    }
+
+    fun toggleDarkMode() {
+        isDarkMode.value = !isDarkMode.value
     }
 
     fun addToCart(item: CartItem) {

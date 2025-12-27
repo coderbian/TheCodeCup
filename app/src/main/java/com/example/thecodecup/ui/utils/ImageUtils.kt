@@ -12,7 +12,11 @@ fun getCoffeeImageResource(coffee: Coffee): Int {
         "cappuccino" -> R.drawable.cappuccino
         "mocha" -> R.drawable.mocha
         "flat white" -> R.drawable.flat_white
-        else -> R.drawable.americano // Default fallback
+        "espresso" -> R.drawable.expresso         // Has actual image (note: expresso.png)
+        "latte" -> R.drawable.latte               // Has actual image
+        "macchiato" -> R.drawable.macchiato       // Has actual image
+        "affogato" -> R.drawable.affogato         // Has actual image
+        else -> R.drawable.americano              // Default fallback
     }
 }
 
@@ -25,7 +29,11 @@ fun getCoffeeImageResourceByName(name: String): Int {
         "cappuccino" -> R.drawable.cappuccino
         "mocha" -> R.drawable.mocha
         "flat white" -> R.drawable.flat_white
-        else -> R.drawable.americano // Default fallback
+        "espresso" -> R.drawable.expresso         // Has actual image (note: expresso.png)
+        "latte" -> R.drawable.latte               // Has actual image
+        "macchiato" -> R.drawable.macchiato       // Has actual image
+        "affogato" -> R.drawable.affogato         // Has actual image
+        else -> R.drawable.americano              // Default fallback
     }
 }
 

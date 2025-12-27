@@ -53,15 +53,15 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
         containerColor = Color.White,
         topBar = {
             TopAppBar(
-                title = { Text("Details", fontWeight = FontWeight.Bold, color = TextPrimary) },
+                title = { Text("Details", fontWeight = FontWeight.Bold, color = TextPrimaryDark) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimaryDark)
                     }
                 },
                 actions = {
                     IconButton(onClick = { navController.navigate(Screen.Cart.route) }) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = TextPrimary)
+                        Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = TextPrimaryDark)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -80,7 +80,7 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .background(BackgroundLight),
+                    .background(CardLightGray),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -110,7 +110,7 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                             text = coffee.name,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = TextPrimary
+                            color = TextPrimaryDark
                         )
                         QuantitySelector(quantity = quantity, onIncrease = { quantity++ }, onDecrease = { if (quantity > 1) quantity-- })
                     }
@@ -137,7 +137,7 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                         isTextOnly = false
                     )
 
-                    Divider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp)
 
                     // Size
                     SizeOptionRow(
@@ -145,7 +145,7 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                         onSelect = { selectedSize = it }
                     )
 
-                    Divider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp)
 
                     // Ice
                     IceOptionRow(
@@ -163,7 +163,7 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                         navController.navigate(Screen.Cart.route)
                     },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = ButtonBlue),
+                    colors = ButtonDefaults.buttonColors(containerColor = ButtonPrimary),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
@@ -198,11 +198,11 @@ fun QuantitySelector(quantity: Int, onIncrease: () -> Unit, onDecrease: () -> Un
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             IconButton(onClick = onDecrease, modifier = Modifier.size(24.dp)) {
-                Text("-", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Text("-", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
             }
-            Text("$quantity", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text("$quantity", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
             IconButton(onClick = onIncrease, modifier = Modifier.size(24.dp)) {
-                Text("+", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Text("+", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
             }
         }
     }
@@ -218,7 +218,7 @@ fun OptionRow(title: String, options: List<String>, selected: String, onSelect: 
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+        Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             options.forEach { option ->
                 val isSelected = option == selected
@@ -226,14 +226,14 @@ fun OptionRow(title: String, options: List<String>, selected: String, onSelect: 
                     // Text-only button (Shot)
                     Surface(
                         shape = RoundedCornerShape(24.dp),
-                        border = if (isSelected) BorderStroke(1.dp, TextPrimary) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
+                        border = if (isSelected) BorderStroke(1.dp, TextPrimaryDark) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
                         color = if (isSelected) Color.Black else Color.White,
                         modifier = Modifier.clickable { onSelect(option) }
                     ) {
                         Text(
                             text = option,
                             modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp),
-                            color = if (isSelected) Color.White else TextSecondary,
+                            color = if (isSelected) Color.White else TextSecondaryGray,
                             fontSize = 14.sp
                         )
                     }
@@ -241,7 +241,7 @@ fun OptionRow(title: String, options: List<String>, selected: String, onSelect: 
                     // Icon button (Select - Hot/Cold)
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        border = if (isSelected) BorderStroke(2.dp, TextPrimary) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
+                        border = if (isSelected) BorderStroke(2.dp, TextPrimaryDark) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
                         color = Color.White,
                         modifier = Modifier
                             .size(56.dp)
@@ -274,13 +274,13 @@ fun SizeOptionRow(selected: String, onSelect: (String) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Size", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+        Text("Size", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf("S", "M", "L").forEach { size ->
                 val isSelected = size == selected
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    border = if (isSelected) BorderStroke(2.dp, TextPrimary) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
+                    border = if (isSelected) BorderStroke(2.dp, TextPrimaryDark) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
                     color = Color.White,
                     modifier = Modifier
                         .size(56.dp)
@@ -310,7 +310,7 @@ fun IceOptionRow(selected: String, onSelect: (String) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Ice", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+        Text("Ice", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             val iceOptions = listOf(
                 "No" to R.drawable.ice_1,
@@ -322,7 +322,7 @@ fun IceOptionRow(selected: String, onSelect: (String) -> Unit) {
                 val isSelected = ice == selected
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    border = if (isSelected) BorderStroke(2.dp, TextPrimary) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
+                    border = if (isSelected) BorderStroke(2.dp, TextPrimaryDark) else BorderStroke(1.dp, Color(0xFFE0E0E0)),
                     color = Color.White,
                     modifier = Modifier
                         .size(56.dp)

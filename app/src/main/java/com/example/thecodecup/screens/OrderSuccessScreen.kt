@@ -21,7 +21,7 @@ import com.example.thecodecup.ui.theme.*
 @Composable
 fun OrderSuccessScreen(navController: NavController) {
     Scaffold(
-        containerColor = BackgroundLight
+        containerColor = BackgroundPrimary
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -46,7 +46,7 @@ fun OrderSuccessScreen(navController: NavController) {
                 text = "Order Success",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = TextPrimaryDark
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -55,7 +55,7 @@ fun OrderSuccessScreen(navController: NavController) {
             Text(
                 text = "Your order has been placed successfully. For more details, go to my orders.",
                 fontSize = 16.sp,
-                color = TextSecondary,
+                color = TextSecondaryGray,
                 textAlign = TextAlign.Center,
                 lineHeight = 24.sp
             )
@@ -70,7 +70,7 @@ fun OrderSuccessScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = ButtonBlue),
+                colors = ButtonDefaults.buttonColors(containerColor = ButtonPrimary),
                 shape = MaterialTheme.shapes.medium
             ) {
                 Text(

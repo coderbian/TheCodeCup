@@ -31,13 +31,13 @@ fun RewardsScreen(navController: NavController) {
     val rewardHistory = DataManager.rewardHistory
 
     Scaffold(
-        containerColor = BackgroundLight,
+        containerColor = BackgroundPrimary,
         topBar = {
             TopAppBar(
                 title = { Text("Rewards", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BackgroundLight,
-                    titleContentColor = TextPrimary
+                    containerColor = BackgroundPrimary,
+                    titleContentColor = TextPrimaryDark
                 )
             )
         },
@@ -73,7 +73,7 @@ fun RewardsScreen(navController: NavController) {
                 text = "History Rewards",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = TextPrimaryDark
             )
 
             if (rewardHistory.isEmpty()) {
@@ -85,7 +85,7 @@ fun RewardsScreen(navController: NavController) {
                 ) {
                     Text(
                         text = "No reward history yet",
-                        color = TextSecondary,
+                        color = TextSecondaryGray,
                         fontSize = 14.sp
                     )
                 }
@@ -105,7 +105,7 @@ fun RewardsScreen(navController: NavController) {
 @Composable
 fun LoyaltyCardSection(stamps: Int, onResetClick: () -> Unit) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = LightCards),
+        colors = CardDefaults.cardColors(containerColor = CardDarkBlue),
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -114,8 +114,8 @@ fun LoyaltyCardSection(stamps: Int, onResetClick: () -> Unit) {
     ) {
         Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.Center) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Loyalty card", color = Color.White, fontSize = 14.sp)
-                Text("$stamps / 8", color = Color.White, fontSize = 14.sp)
+                Text("Loyalty card", color = TextOnDarkSurface, fontSize = 14.sp)
+                Text("$stamps / 8", color = TextOnDarkSurface, fontSize = 14.sp)
             }
             Spacer(modifier = Modifier.height(12.dp))
             Row(
@@ -143,7 +143,7 @@ fun LoyaltyCardSection(stamps: Int, onResetClick: () -> Unit) {
 @Composable
 fun MyPointsSection(totalPoints: Int, onRedeemClick: () -> Unit) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = LightCards),
+        colors = CardDefaults.cardColors(containerColor = CardDarkBlue),
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -155,21 +155,21 @@ fun MyPointsSection(totalPoints: Int, onRedeemClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("My Points:", color = Color.White, fontSize = 14.sp)
+                Text("My Points:", color = TextOnDarkSurface, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = totalPoints.toString(),
-                    color = Color.White,
+                    color = TextOnDarkSurface,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
             Button(
                 onClick = onRedeemClick,
-                colors = ButtonDefaults.buttonColors(containerColor = ButtonBlue),
+                colors = ButtonDefaults.buttonColors(containerColor = CoffeeAccent),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Redeem drinks", color = Color.White, fontSize = 14.sp)
+                Text("Redeem drinks", color = TextOnDarkSurface, fontSize = 14.sp)
             }
         }
     }
@@ -184,7 +184,7 @@ fun RewardHistoryItem(history: RewardHistory) {
     ) {
         Text(
             text = "${history.coffeeName} x${history.quantity}",
-            color = TextPrimary,
+            color = TextPrimaryDark,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium
         )
@@ -194,13 +194,13 @@ fun RewardHistoryItem(history: RewardHistory) {
         ) {
             Text(
                 text = "+ ${history.points} Pts",
-                color = CoffeeBrown,
+                color = CoffeeAccent,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )
             Text(
                 text = history.dateTime,
-                color = TextSecondary,
+                color = TextSecondaryGray,
                 fontSize = 12.sp
             )
         }

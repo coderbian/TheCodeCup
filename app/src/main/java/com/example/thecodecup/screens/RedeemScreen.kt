@@ -29,7 +29,7 @@ fun RedeemScreen(navController: NavController) {
     val totalPoints = DataManager.totalPoints.value
 
     Scaffold(
-        containerColor = BackgroundLight,
+        containerColor = BackgroundPrimary,
         topBar = {
             TopAppBar(
                 title = { Text("Redeem", fontWeight = FontWeight.Bold) },
@@ -39,8 +39,8 @@ fun RedeemScreen(navController: NavController) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BackgroundLight,
-                    titleContentColor = TextPrimary
+                    containerColor = BackgroundPrimary,
+                    titleContentColor = TextPrimaryDark
                 )
             )
         }
@@ -75,7 +75,7 @@ fun RedeemableItemCard(
     onRedeemClick: () -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = SurfaceLight),
+        colors = CardDefaults.cardColors(containerColor = CardWhite),
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -110,7 +110,7 @@ fun RedeemableItemCard(
                     text = item.name,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = TextPrimaryDark
                 )
                 Text(
                     text = "Valid until ${item.validUntil}",
@@ -124,7 +124,7 @@ fun RedeemableItemCard(
                 onClick = onRedeemClick,
                 enabled = totalPoints >= item.pointsRequired,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = ButtonBlue,
+                    containerColor = ButtonPrimary,
                     disabledContainerColor = TextGray
                 ),
                 shape = RoundedCornerShape(20.dp)

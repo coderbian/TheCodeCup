@@ -41,10 +41,10 @@ fun CartScreen(navController: NavController) {
         containerColor = Color.White,
         topBar = {
             TopAppBar(
-                title = { Text("My Cart", fontWeight = FontWeight.Bold, color = TextPrimary) },
+                title = { Text("My Cart", fontWeight = FontWeight.Bold, color = TextPrimaryDark) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimaryDark)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -79,8 +79,8 @@ fun CartScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Total Price", fontSize = 16.sp, color = TextSecondary)
-                    Text("$${String.format("%.2f", totalAmount)}", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                    Text("Total Price", fontSize = 16.sp, color = TextSecondaryGray)
+                    Text("$${String.format("%.2f", totalAmount)}", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = TextPrimaryDark)
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
@@ -106,7 +106,7 @@ fun CartScreen(navController: NavController) {
                         }
                     },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = ButtonBlue),
+                    colors = ButtonDefaults.buttonColors(containerColor = ButtonPrimary),
                     enabled = cartItems.isNotEmpty(),
                     shape = RoundedCornerShape(16.dp)
                 ) {
@@ -158,7 +158,7 @@ fun SwipeToDeleteItem(item: CartItem, onDelete: () -> Unit) {
     ) {
         // Cart Item Card
         Card(
-            colors = CardDefaults.cardColors(containerColor = BackgroundLight),
+            colors = CardDefaults.cardColors(containerColor = CardLightGray),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -190,13 +190,13 @@ fun SwipeToDeleteItem(item: CartItem, onDelete: () -> Unit) {
                 ) {
                     Text(
                         text = item.coffee.name,
-                        color = TextPrimary,
+                        color = TextPrimaryDark,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
                     Text(
                         text = "${item.shot} | ${item.ice} | ${item.size} | full ice",
-                        color = TextSecondary,
+                        color = TextSecondaryGray,
                         fontSize = 14.sp
                     )
                     Row(
@@ -206,13 +206,13 @@ fun SwipeToDeleteItem(item: CartItem, onDelete: () -> Unit) {
                     ) {
                         Text(
                             text = "x ${item.quantity}",
-                            color = TextPrimary,
+                            color = TextPrimaryDark,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
                         Text(
                             text = "$${String.format("%.2f", item.totalPrice)}",
-                            color = TextPrimary,
+                            color = TextPrimaryDark,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )

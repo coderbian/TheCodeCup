@@ -25,13 +25,13 @@ fun ProfileScreen(navController: NavController) {
     val profile by DataManager.userProfile
 
     Scaffold(
-        containerColor = BackgroundLight,
+        containerColor = BackgroundPrimary,
         topBar = {
             TopAppBar(
                 title = { Text("Profile", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BackgroundLight,
-                    titleContentColor = TextPrimary
+                    containerColor = BackgroundPrimary,
+                    titleContentColor = TextPrimaryDark
                 )
             )
         },
@@ -158,7 +158,7 @@ fun ProfileFieldItem(
                             onValueChange = { editedValue = it },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ButtonBlue,
+                                focusedBorderColor = ButtonPrimary,
                                 unfocusedBorderColor = TextGray.copy(alpha = 0.5f)
                             ),
                             maxLines = 3
@@ -169,7 +169,7 @@ fun ProfileFieldItem(
                             onValueChange = { editedValue = it },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ButtonBlue,
+                                focusedBorderColor = ButtonPrimary,
                                 unfocusedBorderColor = TextGray.copy(alpha = 0.5f)
                             )
                         )
@@ -188,13 +188,13 @@ fun ProfileFieldItem(
                             onSave(editedValue)
                             isEditing = false
                         }) {
-                            Text("Save", color = ButtonBlue, fontWeight = FontWeight.Medium)
+                            Text("Save", color = ButtonPrimary, fontWeight = FontWeight.Medium)
                         }
                     }
                 } else {
                     Text(
                         text = value,
-                        color = TextPrimary,
+                        color = TextPrimaryDark,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )

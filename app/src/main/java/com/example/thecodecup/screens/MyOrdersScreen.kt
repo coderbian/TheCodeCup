@@ -44,13 +44,13 @@ fun MyOrdersScreen(navController: NavController) {
     }
 
     Scaffold(
-        containerColor = BackgroundLight,
+        containerColor = BackgroundPrimary,
         topBar = {
             TopAppBar(
                 title = { Text("My Order", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BackgroundLight,
-                    titleContentColor = TextPrimary
+                    containerColor = BackgroundPrimary,
+                    titleContentColor = TextPrimaryDark
                 )
             )
         },
@@ -64,8 +64,8 @@ fun MyOrdersScreen(navController: NavController) {
             // Tab Row
             TabRow(
                 selectedTabIndex = selectedTabIndex,
-                containerColor = BackgroundLight,
-                contentColor = ButtonBlue
+                containerColor = BackgroundPrimary,
+                contentColor = ButtonPrimary
             ) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
@@ -86,7 +86,7 @@ fun MyOrdersScreen(navController: NavController) {
                 ) {
                     Text(
                         text = if (selectedTabIndex == 0) "No ongoing orders" else "No order history",
-                        color = TextSecondary,
+                        color = TextSecondaryGray,
                         fontSize = 16.sp
                     )
                 }
@@ -116,7 +116,7 @@ fun MyOrdersScreen(navController: NavController) {
 @Composable
 fun OrderItemCard(order: Order, onClick: () -> Unit) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = LightCards),
+        colors = CardDefaults.cardColors(containerColor = CardLightGray),
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -133,12 +133,12 @@ fun OrderItemCard(order: Order, onClick: () -> Unit) {
             ) {
                 Text(
                     text = order.dateTime,
-                    color = TextSecondary,
+                    color = TextSecondaryGray,
                     fontSize = 14.sp
                 )
                 Text(
                     text = "$${String.format("%.2f", order.totalPrice)}",
-                    color = Color.White,
+                    color = TextPrimaryDark,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -161,7 +161,7 @@ fun OrderItemCard(order: Order, onClick: () -> Unit) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "${item.coffee.name} x${item.quantity}",
-                        color = Color.White,
+                        color = TextPrimaryDark,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -178,13 +178,13 @@ fun OrderItemCard(order: Order, onClick: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = TextSecondaryGray,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = order.address,
-                    color = Color.White,
+                    color = TextSecondaryGray,
                     fontSize = 14.sp
                 )
             }

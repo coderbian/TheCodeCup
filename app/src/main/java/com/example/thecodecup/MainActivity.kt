@@ -3,9 +3,11 @@ package com.example.thecodecup
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.thecodecup.model.DataManager
 import com.example.thecodecup.screens.HomeScreen
 import com.example.thecodecup.ui.screens.SplashScreen
 import com.example.thecodecup.ui.theme.TheCodeCupTheme
@@ -21,7 +23,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            TheCodeCupTheme {
+            val isDarkMode by DataManager.isDarkMode
+            
+            TheCodeCupTheme(darkTheme = isDarkMode) {
                 val navController = rememberNavController()
 
                 NavHost(navController = navController, startDestination = Screen.Splash.route) {
