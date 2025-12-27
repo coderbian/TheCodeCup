@@ -61,7 +61,12 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                 },
                 actions = {
                     IconButton(onClick = { navController.navigate(Screen.Cart.route) }) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = TextPrimaryDark)
+                        Image(
+                            painter = painterResource(id = R.drawable.shopping_card_icon),
+                            contentDescription = "Cart",
+                            modifier = Modifier.size(24.dp),
+                            colorFilter = ColorFilter.tint(TextPrimaryDark)
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

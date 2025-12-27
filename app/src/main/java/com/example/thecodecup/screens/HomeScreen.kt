@@ -1,15 +1,11 @@
 package com.example.thecodecup.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.*
 import androidx.compose.foundation.Image
@@ -24,7 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -36,39 +34,36 @@ import com.example.thecodecup.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(BackgroundPrimary)
-    ) {
-        // Main scrollable content
+    Scaffold(
+        containerColor = BackgroundPrimary,
+        bottomBar = { BottomNavBar(navController, currentRoute = Screen.Home.route) }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
+                .background(BackgroundPrimary)
                 .padding(horizontal = 20.dp)
-                .padding(top = 20.dp, bottom = 120.dp) // Extra bottom padding for nav bar overlap
+                .padding(top = 20.dp, bottom = 20.dp)
         ) {
-            // 1. Header Component
+            // 1. Header Component (fixed)
             HeaderSection(navController)
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // 2. Loyalty Card View
+            // 2. Loyalty Card View (fixed)
             LoyaltyCardSection(navController)
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // 3. Coffee Grid Section with Border Container
-            CoffeeGridSection(navController)
+            // 3. Coffee Grid Section (container fixed, ONLY grid scrolls)
+            CoffeeGridSection(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
         }
-        
-        // Bottom Navigation Bar (overlaying)
-        BottomNavBar(
-            navController = navController,
-            currentRoute = Screen.Home.route,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 
@@ -89,15 +84,6 @@ fun HeaderSection(navController: NavController) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            // Dark mode toggle button
-            IconButton(onClick = { DataManager.toggleDarkMode() }) {
-                Image(
-                    painter = painterResource(id = R.drawable.moon_icon),
-                    contentDescription = "Toggle Dark Mode",
-                    modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(IconActive)
-                )
-            }
             // Shopping cart button
             IconButton(onClick = { navController.navigate(Screen.Cart.route) }) {
                 Image(
@@ -162,7 +148,10 @@ fun LoyaltyCardSection(navController: NavController) {
 }
 
 @Composable
-fun CoffeeGridSection(navController: NavController) {
+fun CoffeeGridSection(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     // Get all coffee items from DataManager
     val coffees = DataManager.menu
 
@@ -170,35 +159,38 @@ fun CoffeeGridSection(navController: NavController) {
     Card(
         colors = CardDefaults.cardColors(containerColor = CardDarkBlue),
         shape = RoundedCornerShape(20.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp) // slightly smaller padding like teacher design
         ) {
             // Title - WHITE text on dark background
             Text(
                 "Choose your coffee",
                 color = TextOnDarkSurface,
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // Scrollable grid - using LazyVerticalGrid
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // ONLY this grid scrolls
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 400.dp) // Limit height to enable scrolling
+                    .weight(1f)
             ) {
-                items(coffees.size) { index ->
+                items(coffees) { coffee ->
                     CoffeeCard(
-                        coffeeName = coffees[index].name,
-                        coffeeId = coffees[index].id,
+                        coffeeName = coffee.name,
+                        coffeeId = coffee.id,
                         onClick = {
-                            navController.navigate(Screen.Details.createRoute(coffees[index].id))
+                            navController.navigate(Screen.Details.createRoute(coffee.id))
                         }
                     )
                 }
@@ -224,13 +216,13 @@ fun CoffeeCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(12.dp), // smaller padding like teacher design
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Box(
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(72.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(BackgroundPrimary), // Light gray for image background
                 contentAlignment = Alignment.Center
@@ -238,16 +230,16 @@ fun CoffeeCard(
                 Image(
                     painter = painterResource(id = getCoffeeImageResourceByName(coffeeName)),
                     contentDescription = coffeeName,
-                    modifier = Modifier.size(70.dp),
+                    modifier = Modifier.size(60.dp),
                     contentScale = ContentScale.Fit
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 coffeeName,
                 color = TextPrimaryDark,  // Dark text on white card
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
+                fontSize = 13.sp
             )
         }
     }
@@ -257,13 +249,16 @@ fun CoffeeCard(
 fun BottomNavBar(
     navController: NavController,
     currentRoute: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    surfaceColor: Color = CardWhite,
+    shadowElevation: Dp = 8.dp,
+    shape: Shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = CardWhite,
-        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-        shadowElevation = 8.dp
+        color = surfaceColor,
+        shape = shape,
+        shadowElevation = shadowElevation
     ) {
         NavigationBar(
             containerColor = Color.Transparent,
@@ -288,7 +283,7 @@ fun BottomNavBar(
                 }
             },
             colors = NavigationBarItemDefaults.colors(
-                indicatorColor = BackgroundSecondary,
+                indicatorColor = Color.Transparent,
                 selectedIconColor = IconActive,
                 unselectedIconColor = IconInactive
             )
@@ -312,7 +307,7 @@ fun BottomNavBar(
                 }
             },
             colors = NavigationBarItemDefaults.colors(
-                indicatorColor = BackgroundSecondary,
+                indicatorColor = Color.Transparent,
                 selectedIconColor = IconActive,
                 unselectedIconColor = IconInactive
             )
@@ -332,6 +327,30 @@ fun BottomNavBar(
             selected = currentRoute == Screen.MyOrders.route,
             onClick = {
                 navController.navigate(Screen.MyOrders.route) {
+                    popUpTo(Screen.Home.route) { inclusive = false }
+                }
+            },
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = Color.Transparent,
+                selectedIconColor = IconActive,
+                unselectedIconColor = IconInactive
+            )
+        )
+        // Settings (Settings icon)
+        NavigationBarItem(
+            icon = {
+                Image(
+                    painter = painterResource(id = R.drawable.settings_icon),
+                    contentDescription = "Settings",
+                    modifier = Modifier.size(24.dp),
+                    colorFilter = ColorFilter.tint(
+                        if (currentRoute == Screen.Settings.route) IconActive else IconInactive
+                    )
+                )
+            },
+            selected = currentRoute == Screen.Settings.route,
+            onClick = {
+                navController.navigate(Screen.Settings.route) {
                     popUpTo(Screen.Home.route) { inclusive = false }
                 }
             },
