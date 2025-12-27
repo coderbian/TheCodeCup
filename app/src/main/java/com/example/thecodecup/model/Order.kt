@@ -6,6 +6,12 @@ enum class OrderStatus {
     COMPLETED
 }
 
+enum class PaymentMethod {
+    CASH,
+    BANK_TRANSFER,
+    CARD
+}
+
 // Định nghĩa cấu trúc đơn hàng
 data class Order(
     val id: String,
@@ -13,6 +19,9 @@ data class Order(
     val items: List<CartItem>,
     val totalPrice: Double,
     val status: OrderStatus,
-    val address: String = "3 Addersion Court Chino Hills, HO56824, United State"
+    val receiverName: String = "",
+    val receiverPhone: String = "",
+    val shippingAddress: String = "227 Nguyen Van Cu Street, Cho Quan Ward, Ho Chi Minh City",
+    val paymentMethod: PaymentMethod = PaymentMethod.CASH
 )
 

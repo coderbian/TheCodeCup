@@ -13,21 +13,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
 import com.example.thecodecup.R
 import androidx.compose.runtime.Composable
-import com.example.thecodecup.ui.utils.getCoffeeImageResourceByName
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.thecodecup.Screen
 import com.example.thecodecup.model.DataManager
+import com.example.thecodecup.ui.components.BottomNavBar
+import com.example.thecodecup.ui.components.CoffeeCard
+import com.example.thecodecup.ui.components.LoyaltyCard
 import com.example.thecodecup.ui.theme.*
 
 
@@ -52,7 +52,11 @@ fun HomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // 2. Loyalty Card View (fixed)
-            LoyaltyCardSection(navController)
+            val loyaltyStamps by DataManager.loyaltyStamps
+            LoyaltyCard(
+                stamps = loyaltyStamps,
+                onResetClick = { if (loyaltyStamps >= 8) DataManager.resetLoyaltyStamps() }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -107,47 +111,6 @@ fun HeaderSection(navController: NavController) {
 }
 
 @Composable
-fun LoyaltyCardSection(navController: NavController) {
-    val loyaltyStamps by DataManager.loyaltyStamps
-    
-    Card(
-        colors = CardDefaults.cardColors(containerColor = CardDarkBlue),
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(130.dp)
-            .clickable(enabled = loyaltyStamps >= 8) {
-                if (loyaltyStamps >= 8) {
-                    DataManager.resetLoyaltyStamps()
-                }
-            }
-    ) {
-        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.Center) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Loyalty card", color = TextOnDarkSurface, fontSize = 14.sp)
-                Text("$loyaltyStamps / 8", color = TextOnDarkSurface, fontSize = 14.sp)
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth().background(CardWhite, RoundedCornerShape(12.dp)).padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                repeat(8) { index ->
-                    val isActive = index < loyaltyStamps
-                    Image(
-                        painter = painterResource(
-                            id = if (isActive) R.drawable.loyalty_coffee_cup_active else R.drawable.loyalty_coffee_cup_deactive
-                        ),
-                        contentDescription = if (isActive) "Active stamp ${index + 1}" else "Inactive stamp ${index + 1}",
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun CoffeeGridSection(
     navController: NavController,
     modifier: Modifier = Modifier
@@ -188,7 +151,6 @@ fun CoffeeGridSection(
                 items(coffees) { coffee ->
                     CoffeeCard(
                         coffeeName = coffee.name,
-                        coffeeId = coffee.id,
                         onClick = {
                             navController.navigate(Screen.Details.createRoute(coffee.id))
                         }
@@ -196,170 +158,5 @@ fun CoffeeGridSection(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun CoffeeCard(
-    coffeeName: String,
-    coffeeId: String,
-    onClick: () -> Unit
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = CardWhite), // WHITE
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f),
-        onClick = onClick
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp), // smaller padding like teacher design
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(72.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(BackgroundPrimary), // Light gray for image background
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = getCoffeeImageResourceByName(coffeeName)),
-                    contentDescription = coffeeName,
-                    modifier = Modifier.size(60.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                coffeeName,
-                color = TextPrimaryDark,  // Dark text on white card
-                fontWeight = FontWeight.Medium,
-                fontSize = 13.sp
-            )
-        }
-    }
-}
-
-@Composable
-fun BottomNavBar(
-    navController: NavController,
-    currentRoute: String? = null,
-    modifier: Modifier = Modifier,
-    surfaceColor: Color = CardWhite,
-    shadowElevation: Dp = 8.dp,
-    shape: Shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = surfaceColor,
-        shape = shape,
-        shadowElevation = shadowElevation
-    ) {
-        NavigationBar(
-            containerColor = Color.Transparent,
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
-        // Home (Store icon)
-        NavigationBarItem(
-            icon = {
-                Image(
-                    painter = painterResource(id = R.drawable.store_icon),
-                    contentDescription = "Home",
-                    modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(
-                        if (currentRoute == Screen.Home.route) IconActive else IconInactive
-                    )
-                )
-            },
-            selected = currentRoute == Screen.Home.route,
-            onClick = {
-                navController.navigate(Screen.Home.route) {
-                    popUpTo(Screen.Home.route) { inclusive = true }
-                }
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = Color.Transparent,
-                selectedIconColor = IconActive,
-                unselectedIconColor = IconInactive
-            )
-        )
-        // Rewards (Gift icon)
-        NavigationBarItem(
-            icon = {
-                Image(
-                    painter = painterResource(id = R.drawable.gift_icon),
-                    contentDescription = "Rewards",
-                    modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(
-                        if (currentRoute == Screen.Rewards.route) IconActive else IconInactive
-                    )
-                )
-            },
-            selected = currentRoute == Screen.Rewards.route,
-            onClick = {
-                navController.navigate(Screen.Rewards.route) {
-                    popUpTo(Screen.Home.route) { inclusive = false }
-                }
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = Color.Transparent,
-                selectedIconColor = IconActive,
-                unselectedIconColor = IconInactive
-            )
-        )
-        // My Orders (Bill icon)
-        NavigationBarItem(
-            icon = {
-                Image(
-                    painter = painterResource(id = R.drawable.bill_icon),
-                    contentDescription = "My Orders",
-                    modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(
-                        if (currentRoute == Screen.MyOrders.route) IconActive else IconInactive
-                    )
-                )
-            },
-            selected = currentRoute == Screen.MyOrders.route,
-            onClick = {
-                navController.navigate(Screen.MyOrders.route) {
-                    popUpTo(Screen.Home.route) { inclusive = false }
-                }
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = Color.Transparent,
-                selectedIconColor = IconActive,
-                unselectedIconColor = IconInactive
-            )
-        )
-        // Settings (Settings icon)
-        NavigationBarItem(
-            icon = {
-                Image(
-                    painter = painterResource(id = R.drawable.settings_icon),
-                    contentDescription = "Settings",
-                    modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(
-                        if (currentRoute == Screen.Settings.route) IconActive else IconInactive
-                    )
-                )
-            },
-            selected = currentRoute == Screen.Settings.route,
-            onClick = {
-                navController.navigate(Screen.Settings.route) {
-                    popUpTo(Screen.Home.route) { inclusive = false }
-                }
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = Color.Transparent,
-                selectedIconColor = IconActive,
-                unselectedIconColor = IconInactive
-            )
-        )
-    }
     }
 }

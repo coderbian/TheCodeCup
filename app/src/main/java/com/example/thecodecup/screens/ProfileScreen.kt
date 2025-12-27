@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.thecodecup.Screen
 import com.example.thecodecup.model.DataManager
+import com.example.thecodecup.ui.components.BottomNavBar
 import com.example.thecodecup.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)

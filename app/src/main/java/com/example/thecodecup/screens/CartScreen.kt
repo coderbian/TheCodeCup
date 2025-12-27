@@ -26,10 +26,7 @@ import androidx.navigation.NavController
 import com.example.thecodecup.Screen
 import com.example.thecodecup.model.CartItem
 import com.example.thecodecup.model.DataManager
-import com.example.thecodecup.model.Order
-import com.example.thecodecup.model.OrderStatus
 import com.example.thecodecup.ui.theme.*
-import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,23 +83,8 @@ fun CartScreen(navController: NavController) {
                 Button(
                     onClick = {
                         if (cartItems.isNotEmpty()) {
-                            // Create order from cart items
-                            val order = Order(
-                                id = UUID.randomUUID().toString(),
-                                dateTime = DataManager.formatOrderDateTime(),
-                                items = cartItems.toList(),
-                                totalPrice = totalAmount,
-                                status = OrderStatus.ONGOING
-                            )
-                            // Add order to DataManager
-                            DataManager.addOrder(order)
-                            // Clear cart after checkout
-                            DataManager.clearCart()
-                            // Navigate to Order Success screen
-                            navController.navigate(Screen.OrderSuccess.route) {
-                                // Clear back stack to prevent going back to cart
-                                popUpTo(Screen.Cart.route) { inclusive = true }
-                            }
+                            // Go to checkout (shipping + payment)
+                            navController.navigate(Screen.Checkout.route)
                         }
                     },
                     modifier = Modifier.fillMaxWidth().height(56.dp),

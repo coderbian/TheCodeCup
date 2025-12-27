@@ -8,7 +8,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -18,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import com.example.thecodecup.R
 import com.example.thecodecup.Screen
 import com.example.thecodecup.model.DataManager
+import com.example.thecodecup.ui.components.BottomNavBar
 import com.example.thecodecup.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,17 +34,15 @@ import com.example.thecodecup.ui.theme.*
 fun SettingsScreen(navController: NavController) {
     val isDarkMode by DataManager.isDarkMode
     val profile by DataManager.userProfile
+    val notificationsEnabled by DataManager.notificationsEnabled
+    val context = LocalContext.current
+    var showClearDataDialog by remember { mutableStateOf(false) }
     
     Scaffold(
         containerColor = BackgroundPrimary,
         topBar = {
             TopAppBar(
                 title = { Text("Settings", fontWeight = FontWeight.Bold, color = TextPrimaryDark) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimaryDark)
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White
                 )
@@ -133,11 +132,11 @@ fun SettingsScreen(navController: NavController) {
                         icon = Icons.Default.Notifications,
                         title = "Notifications",
                         subtitle = "Receive order updates",
-                        isChecked = true,
-                        onCheckedChange = { /* TODO: Implement */ }
+                        isChecked = notificationsEnabled,
+                        onCheckedChange = { DataManager.setNotificationsEnabled(it) }
                     )
                     
-                    Divider(modifier = Modifier.padding(vertical = 12.dp), color = DividerColor)
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = DividerColor)
                     
                     // Location
                     SettingsItem(
@@ -149,6 +148,90 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
             }
+
+            // Danger Zone
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        "Data",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextPrimaryDark
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { showClearDataDialog = true }
+                            .padding(vertical = 10.dp, horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DeleteOutline,
+                                contentDescription = null,
+                                tint = ErrorRed,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Column {
+                                Text(
+                                    "Clear all data",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = ErrorRed
+                                )
+                                Text(
+                                    "Remove cart, orders, rewards, profile and settings",
+                                    fontSize = 13.sp,
+                                    color = TextSecondaryGray
+                                )
+                            }
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = TextSecondaryGray,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        if (showClearDataDialog) {
+            AlertDialog(
+                onDismissRequest = { showClearDataDialog = false },
+                title = { Text("Clear all data?") },
+                text = { Text("This will delete all local data. You can’t undo this action.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            DataManager.clearAllData(context)
+                            showClearDataDialog = false
+                        }
+                    ) {
+                        Text("Clear", color = ErrorRed, fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showClearDataDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }

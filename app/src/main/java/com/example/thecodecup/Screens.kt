@@ -7,6 +7,8 @@ sealed class Screen(val route: String) {
         fun createRoute(coffeeId: String) = "details_screen/$coffeeId"
     }
     object Cart : Screen("cart_screen")
+    object Checkout : Screen("checkout_screen")
+    object AddressPicker : Screen("address_picker_screen")
     object OrderSuccess : Screen("order_success_screen")
     object MyOrders : Screen("my_orders_screen")
     object Rewards : Screen("rewards_screen")

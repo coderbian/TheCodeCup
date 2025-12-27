@@ -3,6 +3,7 @@ package com.example.thecodecup
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,11 +20,16 @@ import com.example.thecodecup.screens.RewardsScreen
 import com.example.thecodecup.screens.RedeemScreen
 import com.example.thecodecup.screens.ProfileScreen
 import com.example.thecodecup.screens.SettingsScreen
+import com.example.thecodecup.screens.CheckoutScreen
+import com.example.thecodecup.screens.AddressPickerScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            LaunchedEffect(Unit) {
+                DataManager.init(applicationContext)
+            }
             val isDarkMode by DataManager.isDarkMode
             
             TheCodeCupTheme(darkTheme = isDarkMode) {
@@ -41,6 +47,12 @@ class MainActivity : ComponentActivity() {
 
                     // Route Cart
                     composable(Screen.Cart.route) { CartScreen(navController) }
+
+                    // Route Checkout
+                    composable(Screen.Checkout.route) { CheckoutScreen(navController) }
+
+                    // Route Address Picker (placeholder data)
+                    composable(Screen.AddressPicker.route) { AddressPickerScreen(navController) }
 
                     // Route Order Success
                     composable(Screen.OrderSuccess.route) { OrderSuccessScreen(navController) }

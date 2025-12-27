@@ -21,6 +21,8 @@ import androidx.navigation.NavController
 import com.example.thecodecup.Screen
 import com.example.thecodecup.model.DataManager
 import com.example.thecodecup.model.RewardHistory
+import com.example.thecodecup.ui.components.BottomNavBar
+import com.example.thecodecup.ui.components.LoyaltyCard
 import com.example.thecodecup.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,13 +53,9 @@ fun RewardsScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // Loyalty Card Section
-            LoyaltyCardSection(
+            LoyaltyCard(
                 stamps = loyaltyStamps,
-                onResetClick = {
-                    if (loyaltyStamps >= 8) {
-                        DataManager.resetLoyaltyStamps()
-                    }
-                }
+                onResetClick = { if (loyaltyStamps >= 8) DataManager.resetLoyaltyStamps() }
             )
 
             // My Points Section
@@ -96,44 +94,6 @@ fun RewardsScreen(navController: NavController) {
                     items(rewardHistory.reversed()) { history ->
                         RewardHistoryItem(history = history)
                     }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun LoyaltyCardSection(stamps: Int, onResetClick: () -> Unit) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = CardDarkBlue),
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(130.dp)
-            .clickable(enabled = stamps >= 8, onClick = onResetClick)
-    ) {
-        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.Center) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Loyalty card", color = TextOnDarkSurface, fontSize = 14.sp)
-                Text("$stamps / 8", color = TextOnDarkSurface, fontSize = 14.sp)
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White, RoundedCornerShape(12.dp))
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                repeat(8) { index ->
-                    val isActive = index < stamps
-                    Image(
-                        painter = painterResource(
-                            id = if (isActive) R.drawable.loyalty_coffee_cup_active else R.drawable.loyalty_coffee_cup_deactive
-                        ),
-                        contentDescription = if (isActive) "Active stamp ${index + 1}" else "Inactive stamp ${index + 1}",
-                        modifier = Modifier.size(32.dp)
-                    )
                 }
             }
         }

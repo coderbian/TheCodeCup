@@ -15,7 +15,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +23,7 @@ import com.example.thecodecup.Screen
 import com.example.thecodecup.model.DataManager
 import com.example.thecodecup.model.Order
 import com.example.thecodecup.model.OrderStatus
+import com.example.thecodecup.ui.components.BottomNavBar
 import com.example.thecodecup.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -183,7 +183,7 @@ fun OrderItemCard(order: Order, onClick: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = order.address,
+                    text = order.shippingAddress,
                     color = TextSecondaryGray,
                     fontSize = 14.sp
                 )
