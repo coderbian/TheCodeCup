@@ -32,15 +32,24 @@ the UI is componentized, and dark/light theme switching is applied across the ap
 - Shipping info:
   - Receiver name + phone
   - Shipping address
-  - “Change” opens Address Picker (placeholder VN list)
+  - "Change" opens Address Picker (real VN address API)
 - Payment method:
   - Cash
   - Bank transfer
   - Card
 
-### Address Picker (placeholder)
-- Province → District → Ward + detail street
-- Uses static sample data now; designed so it can be replaced by a network API later
+### Address Picker (Real API Integration) ✨
+- **Live data from VNAppMob Province API v2**
+- Cascading dropdowns: Province → District → Ward + detail street
+- Features:
+  - Real-time data fetching from `vapi.vnappmob.com`
+  - 63 provinces/cities in Vietnam
+  - Dynamic district loading based on selected province
+  - Dynamic ward loading based on selected district
+  - Material Design 3 `ExposedDropdownMenuBox` with smooth animations
+  - Loading indicators while fetching data
+  - Error handling with retry functionality
+  - Network security config for API compatibility
 
 ### Orders (3 stages)
 - Tabs: Waiting / On going / History
@@ -90,6 +99,10 @@ the UI is componentized, and dark/light theme switching is applied across the ap
 - Kotlin
 - Jetpack Compose (Material 3)
 - Navigation Compose
+- Networking:
+  - HttpURLConnection (native Android)
+  - Gson (JSON parsing)
+  - Coroutines (async API calls)
 - Data persistence:
   - DataStore Preferences
   - Gson (JSON serialization)
@@ -103,6 +116,37 @@ NavHost setup in:
 - `app/src/main/java/com/example/thecodecup/MainActivity.kt`
 
 Main screens: Splash, Home, Details, Cart, Checkout, Address Picker, Order Success, My Orders, Rewards, Redeem, Profile, Settings.
+
+## API Integration (Vietnamese Address)
+
+### VNAppMob Province API v2
+- **Endpoint:** `https://vapi.vnappmob.com/api/v2/province/`
+- **Documentation:** [vnappmob.com](https://vapi.vnappmob.com/province.v2.html)
+
+### Implementation Details
+- **HTTP Client:** Native `HttpURLConnection` (no external dependencies)
+- **JSON Parsing:** Gson
+- **State Management:** Singleton `AddressManager` (follows `DataManager` pattern)
+- **Async:** Kotlin Coroutines with `Dispatchers.IO`
+
+### API Endpoints Used
+1. `GET /api/v2/province/` - Fetch all 63 provinces/cities
+2. `GET /api/v2/province/district/{province_id}` - Fetch districts by province
+3. `GET /api/v2/province/ward/{district_id}` - Fetch wards by district
+
+### Features
+- Automatic redirect handling (HTTP 308 → HTTPS)
+- Network security configuration for cleartext traffic compatibility
+- Loading states with progress indicators
+- Error handling with retry functionality
+- Cached data to avoid redundant API calls
+- Logging for debugging (`ProvinceApi` and `AddressManager` tags)
+
+### Files
+- `app/src/main/java/com/example/thecodecup/api/ProvinceApi.kt` - API client
+- `app/src/main/java/com/example/thecodecup/model/AddressModels.kt` - Data models
+- `app/src/main/java/com/example/thecodecup/model/AddressManager.kt` - State manager
+- `app/src/main/res/xml/network_security_config.xml` - Network config
 
 ## Data Persistence (DataStore)
 
@@ -173,10 +217,14 @@ Order success image:
 app/src/main/java/com/example/thecodecup/
 ├── MainActivity.kt
 ├── Screens.kt
+├── api/
+│   └── ProvinceApi.kt          # VN address API client
 ├── data/
 │   ├── AppDataStore.kt
 │   └── PersistedAppState.kt
 ├── model/
+│   ├── AddressModels.kt        # Province, District, Ward models
+│   ├── AddressManager.kt       # Address state management
 │   ├── Coffee.kt
 │   ├── DataManager.kt
 │   ├── Order.kt
@@ -206,6 +254,9 @@ app/src/main/java/com/example/thecodecup/
     │   └── Type.kt
     └── utils/
         └── ImageUtils.kt
+
+app/src/main/res/xml/
+└── network_security_config.xml  # Network security for API
 ```
 
 ## Build & Run
@@ -213,11 +264,15 @@ app/src/main/java/com/example/thecodecup/
 Requirements:
 - Android Studio (Giraffe+ recommended)
 - Android device/emulator (minSdk 24)
+- **Internet connection** (for address picker API)
 
 Steps:
 1. Open project in Android Studio
 2. Sync Gradle
 3. Run on emulator/device
+
+Permissions:
+- `INTERNET` - Required for fetching Vietnamese address data from API
 
 ## Troubleshooting
 
@@ -225,23 +280,41 @@ Steps:
 - Try: **Invalidate Caches / Restart**
 - Ensure Gradle sync finished successfully
 
-### 2) Dark mode doesn’t change some screens
+### 2) Dark mode doesn't change some screens
 - Screen is likely still using hard-coded colors
 - Fix by using `MaterialTheme.colorScheme.*` instead of constants like `Color.White`
 
-### 3) Icons don’t tint
+### 3) Icons don't tint
 - VectorDrawable XML can be tinted easily
 - PNG tint is limited; use `ColorFilter.tint` or convert to vector
 
+### 4) Address Picker shows "Failed to load provinces"
+- Check internet connection
+- Verify emulator/device has network access
+- API endpoint: `https://vapi.vnappmob.com/api/v2/province/`
+- Check Logcat for detailed error messages (filter by `ProvinceApi` or `AddressManager`)
+
+### 5) HTTP 308 or Cleartext traffic errors
+- Already handled via `network_security_config.xml`
+- Ensures compatibility with API redirects
+
 ## Roadmap (Optional / Future)
 
-- Replace placeholder address data with a Vietnam provinces API
 - Persist timers more accurately (background scheduling / WorkManager)
 - Migrate persistence from JSON snapshot → Room for orders/cart tables
 - Add search/filter + favorites
 - Improve redemption UX (snackbar feedback, redeemed history)
+- Add address caching to reduce API calls
+- Implement offline mode with cached addresses
+
+## API Credits
+
+- **Vietnamese Address Data:** [VNAppMob Province API v2](https://vapi.vnappmob.com/province.v2.html)
+  - Free, open API for Vietnamese administrative divisions
+  - Provides real-time data for 63 provinces, districts, and wards
 
 ## Credits
 
 - Built with Kotlin + Jetpack Compose (Material 3)
 - Design guided by teacher/Figma requirements (midterm project)
+- Vietnamese address data powered by VNAppMob
