@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +25,22 @@ import com.example.thecodecup.ui.theme.*
 @Composable
 fun ProfileScreen(navController: NavController) {
     val profile by DataManager.userProfile
+
+    // Receive address from AddressPicker via SavedStateHandle
+    val selectedAddressFlow =
+        navController.currentBackStackEntry?.savedStateHandle?.getStateFlow("selected_address", "")
+    val selectedAddress = selectedAddressFlow?.collectAsState(initial = "")?.value.orEmpty()
+
+    // Update profile when address is selected from AddressPicker
+    LaunchedEffect(selectedAddress) {
+        if (selectedAddress.isNotBlank()) {
+            DataManager.updateUserProfile(
+                profile.copy(address = selectedAddress)
+            )
+            // clear one-shot value
+            navController.currentBackStackEntry?.savedStateHandle?.set("selected_address", "")
+        }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -91,7 +108,10 @@ fun ProfileScreen(navController: NavController) {
                         profile.copy(address = newValue)
                     )
                 },
-                isMultiline = true
+                isMultiline = true,
+                onNavigateToPicker = {
+                    navController.navigate(Screen.AddressPicker.route)
+                }
             )
         }
     }
@@ -103,7 +123,8 @@ fun ProfileFieldItem(
     label: String,
     value: String,
     onSave: (String) -> Unit,
-    isMultiline: Boolean = false
+    isMultiline: Boolean = false,
+    onNavigateToPicker: (() -> Unit)? = null
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var editedValue by remember { mutableStateOf(value) }
@@ -205,8 +226,14 @@ fun ProfileFieldItem(
             // Edit icon
             if (!isEditing) {
                 IconButton(onClick = {
-                    editedValue = value
-                    isEditing = true
+                    if (onNavigateToPicker != null) {
+                        // Navigate to AddressPicker for address field
+                        onNavigateToPicker()
+                    } else {
+                        // Regular inline editing for other fields
+                        editedValue = value
+                        isEditing = true
+                    }
                 }) {
                     Icon(
                         imageVector = Icons.Default.Edit,

@@ -23,7 +23,7 @@ data class Order(
     val status: OrderStatus,
     val receiverName: String = "",
     val receiverPhone: String = "",
-    val shippingAddress: String = "227 Nguyen Van Cu Street, Cho Quan Ward, Ho Chi Minh City",
+    val shippingAddress: String = "Thành phố Hồ Chí Minh, Quận 5, Phường 4, 227 Nguyễn Văn Cừ",
     val paymentMethod: PaymentMethod = PaymentMethod.CASH
 )
 

@@ -196,7 +196,7 @@ fun CheckoutScreen(navController: NavController) {
                                 "Address",
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp
+                                fontSize = 15.sp
                             )
                         }
                         Button(

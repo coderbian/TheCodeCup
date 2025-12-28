@@ -16,7 +16,7 @@ data class PersistedAppState(
     val totalPoints: Int = 0,
     val rewardHistory: List<RewardHistory> = emptyList(),
     val userProfile: UserProfile = UserProfile(
-        fullName = "Hieu-Hoc Tran Minh",
+        fullName = "Trần Minh Hiếu Học",
         phoneNumber = "+84348567062",
         email = "tranminhhieuhoc@gmail.com",
         address = "Thành phố Hồ Chí Minh, Quận 5, Phường 4, 227 Nguyễn Văn Cừ"

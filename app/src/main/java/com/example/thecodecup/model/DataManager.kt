@@ -28,12 +28,10 @@ object DataManager {
      */
     val orderDeliveredEvents = MutableSharedFlow<String>(extraBufferCapacity = 16)
 
-    private val defaultProfile = UserProfile(
-        fullName = "Hieu-Hoc Tran Minh",
-        phoneNumber = "+84348567062",
-        email = "tranminhhieuhoc@gmail.com",
-        address = "227 Nguyen Van Cu Street, Cho Quan Ward, Ho Chi Minh City"
-    )
+    // Get default profile from PersistedAppState
+    private val defaultProfile: UserProfile by lazy {
+        PersistedAppState().userProfile
+    }
 
     // Menu Cafe giả
     val menu = listOf(

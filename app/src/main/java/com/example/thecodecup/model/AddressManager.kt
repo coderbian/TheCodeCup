@@ -7,6 +7,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.text.Collator
+import java.util.*
 
 /**
  * Singleton manager for Vietnamese address data
@@ -15,6 +17,9 @@ import kotlinx.coroutines.launch
 object AddressManager {
     private const val TAG = "AddressManager"
     private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    
+    // Vietnamese collator for proper alphabetical sorting
+    private val vietnameseCollator = Collator.getInstance(Locale("vi", "VN"))
 
     // Cached data
     val provinces = mutableStateOf<List<Province>>(emptyList())
@@ -50,7 +55,10 @@ object AddressManager {
             result.fold(
                 onSuccess = { response ->
                     Log.d(TAG, "Provinces loaded successfully: ${response.results.size} items")
-                    provinces.value = response.results
+                    // Sort provinces alphabetically by name
+                    provinces.value = response.results.sortedWith { a, b ->
+                        vietnameseCollator.compare(a.name, b.name)
+                    }
                     isLoadingProvinces.value = false
                 },
                 onFailure = { error ->
@@ -75,7 +83,10 @@ object AddressManager {
             val result = ProvinceApi.getDistricts(provinceId)
             result.fold(
                 onSuccess = { response ->
-                    districts.value = response.results
+                    // Sort districts alphabetically by name
+                    districts.value = response.results.sortedWith { a, b ->
+                        vietnameseCollator.compare(a.name, b.name)
+                    }
                     isLoadingDistricts.value = false
                 },
                 onFailure = { error ->
@@ -98,7 +109,10 @@ object AddressManager {
             val result = ProvinceApi.getWards(districtId)
             result.fold(
                 onSuccess = { response ->
-                    wards.value = response.results
+                    // Sort wards alphabetically by name
+                    wards.value = response.results.sortedWith { a, b ->
+                        vietnameseCollator.compare(a.name, b.name)
+                    }
                     isLoadingWards.value = false
                 },
                 onFailure = { error ->
