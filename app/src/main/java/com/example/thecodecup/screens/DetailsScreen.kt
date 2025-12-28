@@ -163,6 +163,13 @@ fun DetailsScreen(navController: NavController, coffeeId: String?) {
                     )
                 }
 
+                // Price Summary Bar
+                PriceSummaryBar(
+                    unitPrice = coffee.basePrice + sizePrice + shotPrice,
+                    quantity = quantity,
+                    totalPrice = totalPrice
+                )
+
                 // Footer: Button Add to Cart
                 Button(
                     onClick = {
@@ -361,6 +368,62 @@ fun IceOptionRow(selected: String, onSelect: (String) -> Unit) {
                     }
                 }
             }
+        }
+    }
+}
+
+// Price Summary Bar
+@Composable
+fun PriceSummaryBar(unitPrice: Double, quantity: Int, totalPrice: Double) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "Estimated price",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "$${String.format("%.2f", unitPrice)}",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Normal
+                    )
+                    if (quantity > 1) {
+                        Text(
+                            text = "× $quantity",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                }
+            }
+            Text(
+                text = "$${String.format("%.2f", totalPrice)}",
+                fontSize = 20.sp,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
