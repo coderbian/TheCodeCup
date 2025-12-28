@@ -8,7 +8,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.thecodecup.model.DataManager
-import kotlinx.coroutines.delay
 
 @Composable
 fun PromoCodeDialog(
@@ -17,15 +16,7 @@ fun PromoCodeDialog(
 ) {
     var promoCode by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var successMessage by remember { mutableStateOf<String?>(null) }
     var isProcessing by remember { mutableStateOf(false) }
-
-    LaunchedEffect(successMessage) {
-        if (successMessage != null) {
-            delay(1500)
-            onSuccess()
-        }
-    }
 
     AlertDialog(
         onDismissRequest = { if (!isProcessing) onDismiss() },
@@ -50,7 +41,6 @@ fun PromoCodeDialog(
                     onValueChange = { 
                         promoCode = it.uppercase()
                         errorMessage = null
-                        successMessage = null
                     },
                     label = { Text("Promo Code") },
                     singleLine = true,
@@ -67,15 +57,6 @@ fun PromoCodeDialog(
                         fontSize = 12.sp
                     )
                 }
-                
-                if (successMessage != null) {
-                    Text(
-                        text = successMessage!!,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
             }
         },
         confirmButton = {
@@ -89,11 +70,11 @@ fun PromoCodeDialog(
                     isProcessing = true
                     val voucher = DataManager.applyPromoCode(promoCode)
                     if (voucher != null) {
-                        successMessage = "✓ Voucher added successfully!"
                         errorMessage = null
+                        isProcessing = false
+                        onSuccess()
                     } else {
                         errorMessage = "Invalid or already used promo code"
-                        successMessage = null
                         isProcessing = false
                     }
                 },

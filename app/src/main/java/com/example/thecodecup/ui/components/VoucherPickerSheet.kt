@@ -118,7 +118,7 @@ fun VoucherPickerSheet(
                                         onClick = null // Disabled
                                     )
                                     Text(
-                                        text = "⚠️ Cần mua tối thiểu ${voucher.minOrderQuantity} ly (hiện tại: $totalQuantity ly)",
+                                        text = "⚠️ Requires minimum ${voucher.minOrderQuantity} items (current: $totalQuantity items)",
                                         fontSize = 11.sp,
                                         color = MaterialTheme.colorScheme.error,
                                         modifier = Modifier.padding(top = 4.dp)

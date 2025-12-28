@@ -13,6 +13,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,18 +29,39 @@ import com.example.thecodecup.model.Order
 import com.example.thecodecup.model.OrderStatus
 import com.example.thecodecup.ui.components.BottomNavBar
 import com.example.thecodecup.ui.theme.*
-import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyOrdersScreen(navController: NavController) {
+    // Check if we should navigate to a specific tab (from notification)
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+    
+    // Handle tab selection from notification
+    LaunchedEffect(Unit) {
+        val tabFromNotification = savedStateHandle?.get<Int>("selected_tab")
+        if (tabFromNotification != null && tabFromNotification >= 0 && tabFromNotification < 3) {
+            selectedTabIndex = tabFromNotification
+            savedStateHandle.remove<Int>("selected_tab")
+        }
+    }
+    
     val tabs = listOf("Waiting", "On going", "History")
 
     // Watch DataManager.orders to react to changes
     val allOrders = DataManager.orders
-
-    val orders = remember(selectedTabIndex, allOrders) {
+    
+    // Create a snapshot key that changes when any order status changes
+    // This ensures recomposition when order status updates
+    val ordersSnapshotKey = remember {
+        derivedStateOf {
+            // Create a key based on order IDs and their statuses
+            allOrders.joinToString(",") { "${it.id}:${it.status}" }
+        }
+    }
+    
+    // Recalculate orders whenever snapshot key changes or tab changes
+    val orders = remember(selectedTabIndex, ordersSnapshotKey.value) {
         when (selectedTabIndex) {
             0 -> DataManager.getWaitingPickupOrders()
             1 -> DataManager.getOngoingOrders() // includes DELIVERED (ready to confirm)
@@ -45,19 +69,17 @@ fun MyOrdersScreen(navController: NavController) {
         }
     }
 
+    // Confirmation dialog state
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var selectedOrderId by remember { mutableStateOf<String?>(null) }
+    
+    // Snackbar state
     val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(Unit) {
-        DataManager.orderDeliveredEvents.collectLatest {
-            snackbarHostState.showSnackbar(
-                message = "Your order has arrived. Please confirm receipt in On going.",
-                withDismissAction = true
-            )
-        }
-    }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("My Order", fontWeight = FontWeight.Bold) },
@@ -67,8 +89,7 @@ fun MyOrdersScreen(navController: NavController) {
                 )
             )
         },
-        bottomBar = { BottomNavBar(navController, currentRoute = Screen.MyOrders.route) },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        bottomBar = { BottomNavBar(navController, currentRoute = Screen.MyOrders.route) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -120,8 +141,9 @@ fun MyOrdersScreen(navController: NavController) {
                             order = order,
                             isHistory = isHistory,
                             onConfirmReceived = {
-                                // Only allowed when DELIVERED
-                                DataManager.confirmDelivered(order.id)
+                                // Show confirmation dialog
+                                selectedOrderId = order.id
+                                showConfirmDialog = true
                             },
                             showConfirmButton = selectedTabIndex == 1
                         )
@@ -129,6 +151,60 @@ fun MyOrdersScreen(navController: NavController) {
                 }
             }
         }
+    }
+    
+    // Confirmation Dialog
+    if (showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { 
+                showConfirmDialog = false
+                selectedOrderId = null
+            },
+            title = { 
+                Text(
+                    "Confirm Receipt",
+                    fontWeight = FontWeight.Bold
+                ) 
+            },
+            text = { 
+                Text("Are you sure you have received this order?") 
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        selectedOrderId?.let { orderId ->
+                            if (DataManager.confirmDelivered(orderId)) {
+                                showConfirmDialog = false
+                                selectedOrderId = null
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Order confirmed successfully!",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            } else {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Failed to confirm order. Please try again.",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
+                        }
+                    }
+                ) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { 
+                    showConfirmDialog = false
+                    selectedOrderId = null
+                }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 
@@ -183,8 +259,8 @@ fun OrderItemCard(
             // Small status UI (for Waiting/On going)
             if (!isHistory) {
                 val (statusText, statusColor) = when (order.status) {
-                    OrderStatus.WAITING_PICKUP -> "Waiting pickup (≈2s)" to MaterialTheme.colorScheme.onSurfaceVariant
-                    OrderStatus.ONGOING -> "Delivering (≈3s)" to MaterialTheme.colorScheme.tertiary
+                    OrderStatus.WAITING_PICKUP -> "Waiting pickup (≈5s)" to MaterialTheme.colorScheme.onSurfaceVariant
+                    OrderStatus.ONGOING -> "Delivering (≈10s)" to MaterialTheme.colorScheme.tertiary
                     OrderStatus.DELIVERED -> "Delivered - please confirm" to MaterialTheme.colorScheme.primary
                     OrderStatus.COMPLETED -> "Completed" to MaterialTheme.colorScheme.onSurfaceVariant
                 }

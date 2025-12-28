@@ -32,6 +32,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -42,7 +44,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -83,6 +87,8 @@ fun CheckoutScreen(navController: NavController) {
     var showVoucherPicker by remember { mutableStateOf(false) }
     var showPromoDialog by remember { mutableStateOf(false) }
     var voucherError by remember { mutableStateOf<String?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     
     // Calculate total quantity in cart
     val totalQuantity = cartItems.sumOf { it.quantity }
@@ -366,7 +372,7 @@ fun CheckoutScreen(navController: NavController) {
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = "⚠️ Cần mua tối thiểu ${selectedVoucher!!.minOrderQuantity} ly để sử dụng voucher này. Hiện tại: $totalQuantity ly",
+                                        text = "⚠️ Minimum ${selectedVoucher!!.minOrderQuantity} items required to use this voucher. Current: $totalQuantity items",
                                         color = MaterialTheme.colorScheme.error,
                                         fontSize = 12.sp,
                                         modifier = Modifier.padding(12.dp)
@@ -523,6 +529,12 @@ fun CheckoutScreen(navController: NavController) {
             onDismiss = { showPromoDialog = false },
             onSuccess = { 
                 showPromoDialog = false
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "Voucher added successfully!",
+                        duration = SnackbarDuration.Short
+                    )
+                }
                 // Optionally auto-select the newly added voucher
                 val latestVoucher = DataManager.getActiveVouchers().lastOrNull()
                 if (latestVoucher != null) {

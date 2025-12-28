@@ -8,6 +8,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +28,8 @@ fun MyVouchersScreen(navController: NavController) {
     val myVouchers = DataManager.myVouchers
     val activeVouchers = myVouchers.toList()
     var showPromoDialog by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     
     // Ensure default vouchers exist when screen is opened
     LaunchedEffect(Unit) {
@@ -34,6 +38,7 @@ fun MyVouchersScreen(navController: NavController) {
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("My Vouchers", fontWeight = FontWeight.Bold) },
@@ -140,6 +145,12 @@ fun MyVouchersScreen(navController: NavController) {
             onDismiss = { showPromoDialog = false },
             onSuccess = { 
                 showPromoDialog = false
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "Voucher added successfully!",
+                        duration = SnackbarDuration.Short
+                    )
+                }
             }
         )
     }

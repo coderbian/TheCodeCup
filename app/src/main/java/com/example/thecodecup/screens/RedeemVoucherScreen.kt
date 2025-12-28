@@ -11,6 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -36,11 +38,12 @@ fun RedeemVoucherScreen(navController: NavController) {
     val redeemableVouchers = DataManager.redeemableVouchers
     val totalPoints = DataManager.totalPoints.value
     var selectedType by remember { mutableStateOf(RedeemType.DRINKS) }
-    var showSuccessDialog by remember { mutableStateOf(false) }
-    var successMessage by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Redeem Voucher", fontWeight = FontWeight.Bold) },
@@ -156,8 +159,12 @@ fun RedeemVoucherScreen(navController: NavController) {
                             totalPoints = totalPoints,
                             onRedeemClick = {
                                 if (DataManager.redeemPoints(item)) {
-                                    successMessage = "You've redeemed ${item.name}. Check your rewards!"
-                                    showSuccessDialog = true
+                                    coroutineScope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = "You've redeemed ${item.name}. Check your rewards!",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    }
                                 }
                             }
                         )
@@ -172,8 +179,12 @@ fun RedeemVoucherScreen(navController: NavController) {
                             totalPoints = totalPoints,
                             onRedeemClick = {
                                 if (DataManager.redeemVoucher(voucher)) {
-                                    successMessage = "You've redeemed ${voucher.name} voucher. Check your vouchers to use it at checkout."
-                                    showSuccessDialog = true
+                                    coroutineScope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = "You've redeemed ${voucher.name} voucher. Check your vouchers to use it at checkout.",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    }
                                 }
                             }
                         )
@@ -183,29 +194,6 @@ fun RedeemVoucherScreen(navController: NavController) {
         }
     }
 
-    // Success dialog
-    if (showSuccessDialog) {
-        AlertDialog(
-            onDismissRequest = { 
-                showSuccessDialog = false
-                navController.popBackStack()
-            },
-            title = { Text("Success!") },
-            text = { 
-                Text(successMessage)
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showSuccessDialog = false
-                        navController.popBackStack()
-                    }
-                ) {
-                    Text("OK")
-                }
-            }
-        )
-    }
 }
 
 @Composable

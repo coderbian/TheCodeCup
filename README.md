@@ -59,14 +59,19 @@ the UI is componentized, and dark/light theme switching is applied across the ap
   - Error handling with retry functionality
   - Network security config for API compatibility
 
-### Orders (3 stages)
+### Orders (3 stages) ✨
 - Tabs: Waiting / On going / History
 - Order simulation (foreground-only for simplicity):
-  - Waiting pickup → after 2s → On going
-  - On going → after 3s → Delivered (ready to confirm)
-- In-app notification:
-  - Snackbar appears when an order becomes “Delivered”
-- Confirmation gating:
+  - Waiting pickup → after 5s → On going
+  - On going → after 10s → Delivered (ready to confirm)
+- **Real-time UI updates**: Screen automatically refreshes when order status changes
+- **Android System Notifications**:
+  - System notification appears when order is delivered (if notifications enabled)
+  - Clicking notification navigates directly to "On going" tab
+  - Requires notification permission on Android 13+ (API 33+)
+- **Order Confirmation**:
+  - Confirmation dialog before confirming receipt
+  - Success snackbar notification after confirmation
   - User can only confirm receipt when status is Delivered
 - History styling:
   - Completed orders are displayed with lighter/muted text
@@ -124,9 +129,12 @@ the UI is componentized, and dark/light theme switching is applied across the ap
 - Dark/Light toggle (custom UI switch + icon changes)
   - Uses `moon.xml` and `sun.xml` icons (theme-dependent)
 - Notifications toggle (in-app flag)
+  - Controls whether Android system notifications are shown for delivered orders
+  - Requires notification permission to be effective
 - Clear all data (manual reset)
   - Confirm dialog required
   - Clears: cart, orders, rewards, profile, settings persisted state
+  - Default vouchers are automatically re-added after clearing
 
 ### Theme / Dark mode
 - Global Material 3 theme with Light + Dark schemes
@@ -228,14 +236,24 @@ Statuses:
 - COMPLETED (History)
 
 Timing (foreground-only):
-- +2s: WAITING_PICKUP → ONGOING
-- +3s: ONGOING → DELIVERED
+- +5s: WAITING_PICKUP → ONGOING
+- +10s: ONGOING → DELIVERED
 
 User action:
 - Only DELIVERED orders can be confirmed (DELIVERED → COMPLETED)
+- Confirmation dialog appears before confirming
+- Success snackbar shown after successful confirmation
 
-In-app notification:
-- Snackbar shown when order reaches DELIVERED
+Notifications:
+- **Android System Notification**: Shown when order reaches DELIVERED (if notifications enabled)
+- Notification opens app and navigates to "On going" tab
+- Requires `POST_NOTIFICATIONS` permission on Android 13+ (API 33+)
+- Permission is requested automatically on app launch
+
+UI Auto-refresh:
+- Screen automatically updates when order status changes
+- No need to navigate away and back to see updates
+- Progress indicators and status text update in real-time
 
 ## Assets (Icons/Images)
 
@@ -289,20 +307,22 @@ app/src/main/java/com/example/thecodecup/
 │   ├── RewardsScreen.kt
 │   ├── SettingsScreen.kt
 │   └── SplashScreen.kt
-└── ui/
-    ├── components/
-    │   ├── BottomNavBar.kt
-    │   ├── CoffeeCard.kt
-    │   ├── LoyaltyCard.kt
-    │   ├── PromoCodeDialog.kt   # Promo code input dialog
-    │   ├── VoucherCard.kt       # Voucher display card
-    │   └── VoucherPickerSheet.kt # Bottom sheet for voucher selection at checkout
-    ├── theme/
-    │   ├── Color.kt
-    │   ├── Theme.kt
-    │   └── Type.kt
-    └── utils/
-        └── ImageUtils.kt
+├── ui/
+│   ├── components/
+│   │   ├── BottomNavBar.kt
+│   │   ├── CoffeeCard.kt
+│   │   ├── LoyaltyCard.kt
+│   │   ├── PromoCodeDialog.kt   # Promo code input dialog
+│   │   ├── VoucherCard.kt       # Voucher display card
+│   │   └── VoucherPickerSheet.kt # Bottom sheet for voucher selection at checkout
+│   ├── theme/
+│   │   ├── Color.kt
+│   │   ├── Theme.kt
+│   │   └── Type.kt
+│   └── utils/
+│       └── ImageUtils.kt
+└── utils/
+    └── NotificationManager.kt   # Android system notification manager
 
 app/src/main/res/xml/
 └── network_security_config.xml  # Network security for API
@@ -322,6 +342,9 @@ Steps:
 
 Permissions:
 - `INTERNET` - Required for fetching Vietnamese address data from API
+- `POST_NOTIFICATIONS` - Required for Android system notifications (Android 13+, API 33+)
+  - Permission is requested automatically on app launch
+  - Notifications are only shown if permission is granted and enabled in settings
 
 ## Troubleshooting
 
@@ -346,6 +369,17 @@ Permissions:
 ### 5) HTTP 308 or Cleartext traffic errors
 - Already handled via `network_security_config.xml`
 - Ensures compatibility with API redirects
+
+### 6) Notifications not showing
+- Check if notification permission is granted (Android 13+)
+- Verify notifications are enabled in Settings
+- Ensure app is not in battery optimization mode
+- Check notification channel is created (done automatically on app launch)
+
+### 7) Screen not refreshing when order status changes
+- Screen uses `derivedStateOf` to observe order status changes
+- If issues persist, try navigating away and back to the screen
+- Ensure app is in foreground (simulation only works when app is active)
 
 ## Roadmap (Optional / Future)
 

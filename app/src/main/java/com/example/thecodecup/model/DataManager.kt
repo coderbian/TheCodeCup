@@ -22,6 +22,7 @@ object DataManager {
     private var store: AppDataStore? = null
     private var hasInitialized = false
     private val orderSimulationJobs = mutableMapOf<String, Job>()
+    private var appContext: android.content.Context? = null
 
     /**
      * In-app delivery events (orderId). MyOrdersScreen can collect this and show a Snackbar.
@@ -103,6 +104,7 @@ object DataManager {
     fun init(context: Context) {
         if (hasInitialized) return
         hasInitialized = true
+        appContext = context.applicationContext
         store = AppDataStore(context.applicationContext)
         ioScope.launch {
             val loaded = store?.loadState()
@@ -410,8 +412,8 @@ object DataManager {
 
         orderSimulationJobs[orderId]?.cancel()
         orderSimulationJobs[orderId] = ioScope.launch {
-            // After 2s -> ONGOING
-            delay(2000)
+            // After 5s -> ONGOING
+            delay(5000)
             withContext(Dispatchers.Main) {
                 val idx = orders.indexOfFirst { it.id == orderId }
                 if (idx != -1 && orders[idx].status == OrderStatus.WAITING_PICKUP) {
@@ -420,14 +422,22 @@ object DataManager {
                 }
             }
 
-            // After 3s more -> DELIVERED (ready to confirm)
-            delay(3000)
+            // After 10s more -> DELIVERED (ready to confirm)
+            delay(10000)
             withContext(Dispatchers.Main) {
                 val idx = orders.indexOfFirst { it.id == orderId }
                 if (idx != -1 && orders[idx].status == OrderStatus.ONGOING) {
                     orders[idx] = orders[idx].copy(status = OrderStatus.DELIVERED)
                     persistAsync()
                     orderDeliveredEvents.tryEmit(orderId)
+                    
+                    // Show Android notification if enabled
+                    if (notificationsEnabled.value && appContext != null) {
+                        com.example.thecodecup.utils.NotificationManager.showOrderDeliveredNotification(
+                            appContext!!,
+                            orderId
+                        )
+                    }
                 }
             }
         }

@@ -1,10 +1,19 @@
 package com.example.thecodecup
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,11 +34,52 @@ import com.example.thecodecup.screens.CheckoutScreen
 import com.example.thecodecup.screens.AddressPickerScreen
 import com.example.thecodecup.screens.MyVouchersScreen
 import com.example.thecodecup.screens.RedeemVoucherScreen
+import com.example.thecodecup.utils.NotificationManager
 
 class MainActivity : ComponentActivity() {
+    // Permission launcher for notification permission (Android 13+)
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        // Permission result handled, notifications will work if granted
+    }
+    
+    // State to track notification navigation
+    private var notificationNavigationState = mutableStateOf<Pair<String, Int>?>(null)
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val navigateTo = intent.getStringExtra("navigate_to")
+        val tabIndex = intent.getIntExtra("tab_index", -1)
+        if (navigateTo != null && tabIndex >= 0) {
+            notificationNavigationState.value = Pair(navigateTo, tabIndex)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        
+        // Initialize NotificationManager
+        NotificationManager.init(applicationContext)
+        
+        // Request notification permission for Android 13+ (API 33+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission already granted
+                }
+                else -> {
+                    // Request permission
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        }
+        
         setContent {
             LaunchedEffect(Unit) {
                 DataManager.init(applicationContext)
@@ -38,8 +88,54 @@ class MainActivity : ComponentActivity() {
             
             TheCodeCupTheme(darkTheme = isDarkMode) {
                 val navController = rememberNavController()
+                
+                // Check if we're coming from notification (on first launch)
+                val fromNotification = intent.getBooleanExtra("from_notification", false)
+                val navigateTo = intent.getStringExtra("navigate_to")
+                val tabIndex = intent.getIntExtra("tab_index", -1)
+                
+                // Observe notification navigation state (for when app is already running)
+                val notificationNav by notificationNavigationState
 
-                NavHost(navController = navController, startDestination = Screen.Splash.route) {
+                // Handle navigation from notification
+                LaunchedEffect(notificationNav) {
+                    val (navTo, tabIdx) = notificationNav ?: return@LaunchedEffect
+                    if (navTo == "my_orders" && tabIdx >= 0) {
+                        // Wait a bit to ensure NavHost is ready
+                        kotlinx.coroutines.delay(300)
+                        // Navigate to MyOrders if not already there
+                        if (navController.currentDestination?.route != Screen.MyOrders.route) {
+                            navController.navigate(Screen.MyOrders.route) {
+                                // Pop back stack to home if needed
+                                popUpTo(Screen.Home.route) { inclusive = false }
+                            }
+                        }
+                        // Store tab index for MyOrdersScreen to use
+                        navController.currentBackStackEntry?.savedStateHandle?.set("selected_tab", tabIdx)
+                        // Clear the state after handling
+                        notificationNavigationState.value = null
+                    }
+                }
+                
+                // Handle navigation from notification on first launch
+                LaunchedEffect(fromNotification, navigateTo, tabIndex) {
+                    if (fromNotification && navigateTo == "my_orders" && tabIndex >= 0) {
+                        // Wait a bit to ensure NavHost is ready
+                        kotlinx.coroutines.delay(300)
+                        // Store tab index for MyOrdersScreen to use
+                        navController.currentBackStackEntry?.savedStateHandle?.set("selected_tab", tabIndex)
+                    }
+                }
+
+                NavHost(
+                    navController = navController, 
+                    startDestination = if (fromNotification && navigateTo == "my_orders") {
+                        // Skip splash if coming from notification on first launch
+                        Screen.MyOrders.route
+                    } else {
+                        Screen.Splash.route
+                    }
+                ) {
                     composable(Screen.Splash.route) { SplashScreen(navController) }
                     composable(Screen.Home.route) { HomeScreen(navController) }
 
@@ -62,7 +158,16 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.OrderSuccess.route) { OrderSuccessScreen(navController) }
 
                     // Route My Orders
-                    composable(Screen.MyOrders.route) { MyOrdersScreen(navController) }
+                    composable(Screen.MyOrders.route) { 
+                        // Handle navigation from notification
+                        LaunchedEffect(Unit) {
+                            if (fromNotification && navigateTo == "my_orders" && tabIndex >= 0) {
+                                // Store tab index for MyOrdersScreen to use
+                                navController.currentBackStackEntry?.savedStateHandle?.set("selected_tab", tabIndex)
+                            }
+                        }
+                        MyOrdersScreen(navController) 
+                    }
 
                     // Route Rewards
                     composable(Screen.Rewards.route) { RewardsScreen(navController) }

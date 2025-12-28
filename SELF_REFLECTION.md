@@ -13,6 +13,7 @@
 - Tính năng darkmode được em bổ sung thêm
 - Ở phần My Order, em chia ra 3 trạng thái thay vì 2, lần lượt là "Waiting", "On going", "History", em thấy việc chia ra như vậy sẽ giúp người dùng dễ dàng theo dõi trạng thái đơn hàng của mình, đồng thời người dùng chỉ được xác nhận đơn hàng khi đã nhận được hàng.
 - Thêm trang chứa mã giảm giá, voucher đang có. Các vourcher có thể dùng lúc thanh toán
+- Thêm tính năng thông báo
 
 ## Khó khăn mà tôi đã gặp phải và cách giải quyết
 - Khó khăn lớn nhất là việc chưa thành thạo ngôn ngữ Kotlin cũng như còn chưa biết nhiều về Mobile Dev khiến có những phần em muốn thử nhưng chưa dám đặt tay vào làm: em muốn thêm tính năng tự lấy địa chỉ, AI gợi ý món phù hợp với mùa, lời chào được thay đổi theo giờ trong ngày, ...
