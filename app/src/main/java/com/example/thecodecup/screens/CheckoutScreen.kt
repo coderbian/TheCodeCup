@@ -205,7 +205,7 @@ fun CheckoutScreen(navController: NavController) {
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Text("Change", color = MaterialTheme.colorScheme.onSurface, fontSize = 13.sp)
+                            Text("Change", color = MaterialTheme.colorScheme.onPrimary, fontSize = 13.sp)
                         }
                     }
 

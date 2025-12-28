@@ -19,7 +19,7 @@ data class PersistedAppState(
         fullName = "Hieu-Hoc Tran Minh",
         phoneNumber = "+84348567062",
         email = "tranminhhieuhoc@gmail.com",
-        address = "227 Nguyen Van Cu Street, Cho Quan Ward, Ho Chi Minh City"
+        address = "Thành phố Hồ Chí Minh, Quận 5, Phường 4, 227 Nguyễn Văn Cừ"
     ),
     val isDarkMode: Boolean = false,
     val notificationsEnabled: Boolean = true
