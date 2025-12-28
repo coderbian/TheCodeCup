@@ -62,9 +62,25 @@ fun RewardsScreen(navController: NavController) {
             MyPointsSection(
                 totalPoints = totalPoints,
                 onRedeemClick = {
-                    navController.navigate(Screen.Redeem.route)
+                    navController.navigate(Screen.RedeemVoucher.route)
                 }
             )
+            
+            // My Vouchers Button
+            Button(
+                onClick = { navController.navigate(Screen.MyVouchers.route) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    "My Vouchers",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
 
             // History Rewards Section
             Text(
@@ -129,7 +145,7 @@ fun MyPointsSection(totalPoints: Int, onRedeemClick: () -> Unit) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Redeem drinks", color = MaterialTheme.colorScheme.onTertiary, fontSize = 14.sp)
+                Text("Redeem", color = MaterialTheme.colorScheme.onTertiary, fontSize = 14.sp)
             }
         }
     }

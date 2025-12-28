@@ -113,6 +113,30 @@ fun ProfileScreen(navController: NavController) {
                     navController.navigate(Screen.AddressPicker.route)
                 }
             )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // My Vouchers Button
+            Button(
+                onClick = { navController.navigate(Screen.MyVouchers.route) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CardGiftcard,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    "My Vouchers",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }

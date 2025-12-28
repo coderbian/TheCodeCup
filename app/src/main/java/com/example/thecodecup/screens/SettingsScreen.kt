@@ -141,14 +141,14 @@ fun SettingsScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.outlineVariant
                     )
                     
-                    // Location
-                    SettingsItem(
-                        icon = null,
-                        iconVector = Icons.Default.LocationOn,
-                        title = "Location",
-                        subtitle = "Ho Chi Minh City",
-                        onClick = { /* TODO: Implement */ }
-                    )
+//                    // Location
+//                    SettingsItem(
+//                        icon = null,
+//                        iconVector = Icons.Default.LocationOn,
+//                        title = "Location",
+//                        subtitle = "Ho Chi Minh City",
+//                        onClick = { /* TODO: Implement */ }
+//                    )
                 }
             }
 

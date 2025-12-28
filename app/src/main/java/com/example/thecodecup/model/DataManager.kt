@@ -83,14 +83,38 @@ object DataManager {
     // Settings: notifications
     var notificationsEnabled = mutableStateOf(true)
 
+    // Vouchers của user
+    val myVouchers = mutableStateListOf<Voucher>()
+
+    // Redeemable vouchers (có thể đổi bằng points)
+    val redeemableVouchers = listOf(
+        RedeemableVoucher("v1", "COFFEE10", "10% Off", "Giảm 10% cho đơn hàng", 10, 100, 30),
+        RedeemableVoucher("v2", "COFFEE20", "20% Off", "Giảm 20% cho đơn hàng", 20, 200, 30),
+        RedeemableVoucher("v3", "COFFEE50", "50% Off", "Giảm 50% cho đơn hàng", 50, 500, 7)
+    )
+
+    // Promo codes available (admin defined)
+    private val availablePromoCodes = listOf(
+        PromoCodeTemplate("WELCOME2024", "Welcome Gift", "Chào mừng khách hàng mới", 15, "31/12/2024"),
+        PromoCodeTemplate("BIRTHDAY", "Birthday Special", "Sinh nhật vui vẻ", 25, "31/12/2024"),
+        PromoCodeTemplate("NEWYEAR", "New Year 2024", "Chúc mừng năm mới", 30, "31/01/2024")
+    )
+
     fun init(context: Context) {
         if (hasInitialized) return
         hasInitialized = true
         store = AppDataStore(context.applicationContext)
         ioScope.launch {
-            val loaded = store?.loadState() ?: return@launch
+            val loaded = store?.loadState()
             withContext(Dispatchers.Main) {
-                applyLoadedState(loaded)
+                if (loaded != null) {
+                    applyLoadedState(loaded)
+                } else {
+                    // First time install - add default vouchers
+                    myVouchers.clear()
+                    myVouchers.addAll(PersistedAppState().myVouchers)
+                    persistAsync()
+                }
             }
         }
     }
@@ -256,6 +280,7 @@ object DataManager {
         loyaltyStamps.value = 0
         totalPoints.value = 0
         rewardHistory.clear()
+        myVouchers.clear()
         userProfile.value = defaultProfile
         isDarkMode.value = false
         notificationsEnabled.value = true
@@ -263,6 +288,117 @@ object DataManager {
         ioScope.launch {
             store?.clearAll()
         }
+    }
+
+    // Redeem voucher từ points
+    fun redeemVoucher(redeemableVoucher: RedeemableVoucher): Boolean {
+        if (totalPoints.value < redeemableVoucher.pointsRequired) return false
+        
+        // Trừ points
+        totalPoints.value -= redeemableVoucher.pointsRequired
+        
+        // Tính ngày hết hạn
+        val expiryDate = calculateExpiryDate(redeemableVoucher.validDays)
+        
+        // Tạo voucher mới
+        val voucher = Voucher(
+            id = UUID.randomUUID().toString(),
+            code = redeemableVoucher.code + "_" + System.currentTimeMillis(),
+            name = redeemableVoucher.name,
+            description = redeemableVoucher.description,
+            type = VoucherType.PERCENTAGE,
+            discountPercent = redeemableVoucher.discountPercent,
+            expiryDate = expiryDate,
+            source = VoucherSource.REDEEMED,
+            status = VoucherStatus.ACTIVE,
+            minOrderQuantity = null
+        )
+        
+        myVouchers.add(voucher)
+        persistAsync()
+        return true
+    }
+
+    // Nhập promo code
+    fun applyPromoCode(code: String): Voucher? {
+        val promoTemplate = availablePromoCodes.find { it.code.equals(code, ignoreCase = true) }
+            ?: return null
+        
+        // Check if already used
+        if (myVouchers.any { it.code == promoTemplate.code && it.source == VoucherSource.PROMO_CODE }) {
+            return null // Already used this promo code
+        }
+        
+        // Create voucher
+        val voucher = Voucher(
+            id = UUID.randomUUID().toString(),
+            code = promoTemplate.code,
+            name = promoTemplate.name,
+            description = promoTemplate.description,
+            type = VoucherType.PERCENTAGE,
+            discountPercent = promoTemplate.discountPercent,
+            expiryDate = promoTemplate.expiryDate,
+            source = VoucherSource.PROMO_CODE,
+            status = VoucherStatus.ACTIVE,
+            minOrderQuantity = null
+        )
+        
+        myVouchers.add(voucher)
+        persistAsync()
+        return voucher
+    }
+
+    // Admin gift voucher
+    fun grantVoucherFromAdmin(voucherTemplate: RedeemableVoucher) {
+        val expiryDate = calculateExpiryDate(voucherTemplate.validDays)
+        val voucher = Voucher(
+            id = UUID.randomUUID().toString(),
+            code = voucherTemplate.code + "_GIFT",
+            name = voucherTemplate.name,
+            description = voucherTemplate.description,
+            type = VoucherType.PERCENTAGE,
+            discountPercent = voucherTemplate.discountPercent,
+            expiryDate = expiryDate,
+            source = VoucherSource.ADMIN_GIFT,
+            status = VoucherStatus.ACTIVE,
+            minOrderQuantity = null
+        )
+        myVouchers.add(voucher)
+        persistAsync()
+    }
+
+    // Sử dụng voucher (khi checkout)
+    fun useVoucher(voucherId: String) {
+        val index = myVouchers.indexOfFirst { it.id == voucherId }
+        if (index != -1) {
+            myVouchers.removeAt(index)
+            persistAsync()
+        }
+    }
+
+    // Get active vouchers
+    fun getActiveVouchers(): List<Voucher> {
+        return myVouchers.filter { it.status == VoucherStatus.ACTIVE }
+    }
+    
+    // Ensure default vouchers exist (call this if vouchers are missing)
+    fun ensureDefaultVouchers() {
+        val hasDefaultVouchers = myVouchers.any { 
+            it.code == "WELCOME50" || it.code == "GROUP20" || it.code == "FIRST15"
+        }
+        
+        if (!hasDefaultVouchers) {
+            myVouchers.addAll(PersistedAppState().myVouchers)
+            persistAsync()
+        }
+    }
+
+    // Helper: Calculate expiry date
+    private fun calculateExpiryDate(validDays: Int): String {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, validDays)
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return dateFormat.format(calendar.time)
     }
 
     private fun startOrderSimulationIfNeeded(orderId: String) {
@@ -306,6 +442,20 @@ object DataManager {
         totalPoints.value = state.totalPoints
         rewardHistory.clear()
         rewardHistory.addAll(state.rewardHistory)
+        myVouchers.clear()
+        myVouchers.addAll(state.myVouchers)
+        
+        // Check if default vouchers already exist
+        val hasDefaultVouchers = myVouchers.any { 
+            it.code == "WELCOME50" || it.code == "GROUP20" || it.code == "FIRST15"
+        }
+        
+        // If no default vouchers exist, add them (first time or after clear)
+        if (!hasDefaultVouchers) {
+            myVouchers.addAll(PersistedAppState().myVouchers)
+            persistAsync() // Save default vouchers immediately
+        }
+        
         userProfile.value = state.userProfile
         isDarkMode.value = state.isDarkMode
         notificationsEnabled.value = state.notificationsEnabled
@@ -319,6 +469,7 @@ object DataManager {
             loyaltyStamps = loyaltyStamps.value,
             totalPoints = totalPoints.value,
             rewardHistory = rewardHistory.toList(),
+            myVouchers = myVouchers.toList(),
             userProfile = userProfile.value,
             isDarkMode = isDarkMode.value,
             notificationsEnabled = notificationsEnabled.value

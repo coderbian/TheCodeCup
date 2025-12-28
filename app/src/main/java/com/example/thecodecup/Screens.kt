@@ -15,4 +15,6 @@ sealed class Screen(val route: String) {
     object Redeem : Screen("redeem_screen")
     object Profile : Screen("profile_screen")
     object Settings : Screen("settings_screen")
+    object MyVouchers : Screen("my_vouchers_screen")
+    object RedeemVoucher : Screen("redeem_voucher_screen")
 }

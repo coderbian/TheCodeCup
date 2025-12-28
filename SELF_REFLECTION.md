@@ -12,9 +12,12 @@
 - Em thấy việc chỉnh ngồi chỉnh mấy cái UI components khá vui, với khi test trên các kích thước màn hình khác nhau đôi khi nó có chút khác nhưng mà sửa cũng dễ
 - Tính năng darkmode được em bổ sung thêm
 - Ở phần My Order, em chia ra 3 trạng thái thay vì 2, lần lượt là "Waiting", "On going", "History", em thấy việc chia ra như vậy sẽ giúp người dùng dễ dàng theo dõi trạng thái đơn hàng của mình, đồng thời người dùng chỉ được xác nhận đơn hàng khi đã nhận được hàng.
+- Thêm trang chứa mã giảm giá, voucher đang có. Các vourcher có thể dùng lúc thanh toán
 
 ## Khó khăn mà tôi đã gặp phải và cách giải quyết
 - Khó khăn lớn nhất là việc chưa thành thạo ngôn ngữ Kotlin cũng như còn chưa biết nhiều về Mobile Dev khiến có những phần em muốn thử nhưng chưa dám đặt tay vào làm: em muốn thêm tính năng tự lấy địa chỉ, AI gợi ý món phù hợp với mùa, lời chào được thay đổi theo giờ trong ngày, ...
 - Em chưa rành về việc xin cấp quyền của Android, cũng như việc thiết kế Databases, hiện tại em chỉ lưu Room Databases trong các files json
+- Đôi khi em mấy thời gian trong việc đi thu thập assets như icons, ảnh, ... vì em thấy icons mặc định mà Android Studio là không bắt mắc, các ảnh, logo em tự thiết kế bằng canva, figma, ...
 
 ## Tôi có thể cải thiện điều gì?
+- Có rất nhiều lỗi vặt mà em chưa có thời gian đủ để xem và sửa chi tiết

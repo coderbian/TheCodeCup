@@ -65,4 +65,7 @@ dependencies {
     // Persistence (midterm-friendly): DataStore Preferences + Gson for JSON serialization
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("com.google.code.gson:gson:2.11.0")
+
+    // For splashscreen
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

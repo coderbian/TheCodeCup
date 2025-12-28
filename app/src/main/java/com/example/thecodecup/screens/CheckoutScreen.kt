@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -54,6 +55,10 @@ import com.example.thecodecup.model.DataManager
 import com.example.thecodecup.model.Order
 import com.example.thecodecup.model.OrderStatus
 import com.example.thecodecup.model.PaymentMethod
+import com.example.thecodecup.model.Voucher
+import com.example.thecodecup.ui.components.PromoCodeDialog
+import com.example.thecodecup.ui.components.VoucherCard
+import com.example.thecodecup.ui.components.VoucherPickerSheet
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,6 +77,36 @@ fun CheckoutScreen(navController: NavController) {
     var receiverPhone by remember { mutableStateOf(profile.phoneNumber) }
     var address by remember { mutableStateOf(profile.address) }
     var paymentMethod by remember { mutableStateOf(PaymentMethod.CASH) }
+    
+    // Voucher state
+    var selectedVoucher by remember { mutableStateOf<Voucher?>(null) }
+    var showVoucherPicker by remember { mutableStateOf(false) }
+    var showPromoDialog by remember { mutableStateOf(false) }
+    var voucherError by remember { mutableStateOf<String?>(null) }
+    
+    // Calculate total quantity in cart
+    val totalQuantity = cartItems.sumOf { it.quantity }
+    
+    // Check if selected voucher is valid
+    val isVoucherValid = remember(selectedVoucher, totalQuantity) {
+        if (selectedVoucher == null) true
+        else {
+            val voucher = selectedVoucher!!
+            // Check min order quantity condition
+            if (voucher.minOrderQuantity != null && totalQuantity < voucher.minOrderQuantity) {
+                false
+            } else {
+                true
+            }
+        }
+    }
+    
+    // Calculate discount (only if voucher is valid)
+    val discount = if (selectedVoucher != null && isVoucherValid) {
+        (totalAmount * selectedVoucher!!.discountPercent / 100.0)
+    } else 0.0
+    
+    val finalTotal = totalAmount - discount
 
     LaunchedEffect(selectedAddress) {
         if (selectedAddress.isNotBlank()) {
@@ -263,7 +298,7 @@ fun CheckoutScreen(navController: NavController) {
                 }
             }
 
-            // Place order
+            // Voucher section
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(12.dp),
@@ -271,25 +306,176 @@ fun CheckoutScreen(navController: NavController) {
             ) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.CreditCard,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            "Voucher",
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 15.sp
+                        )
+                    }
+
+                    if (selectedVoucher == null) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = { showVoucherPicker = true },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.secondary
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                            ) {
+                                Text("Select Voucher", fontSize = 13.sp)
+                            }
+                            Button(
+                                onClick = { showPromoDialog = true },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                            ) {
+                                Text("Enter Code", fontSize = 13.sp)
+                            }
+                        }
+                    } else {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            VoucherCard(
+                                voucher = selectedVoucher!!,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            
+                            // Show warning if voucher condition not met
+                            if (!isVoucherValid && selectedVoucher!!.minOrderQuantity != null) {
+                                Surface(
+                                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
+                                    shape = RoundedCornerShape(8.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "⚠️ Cần mua tối thiểu ${selectedVoucher!!.minOrderQuantity} ly để sử dụng voucher này. Hiện tại: $totalQuantity ly",
+                                        color = MaterialTheme.colorScheme.error,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier.padding(12.dp)
+                                    )
+                                }
+                            }
+                            
+                            Button(
+                                onClick = { selectedVoucher = null },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text(
+                                    "Remove Voucher",
+                                    color = MaterialTheme.colorScheme.error,
+                                    fontSize = 13.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Place order
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    // Subtotal
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Total", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                        Text("Subtotal", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                         Text(
                             "$${String.format("%.2f", totalAmount)}",
                             color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
+                            fontSize = 14.sp
                         )
                     }
+                    
+                    // Discount (if voucher applied and valid)
+                    if (selectedVoucher != null && isVoucherValid) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "Discount (${selectedVoucher!!.discountPercent}%)",
+                                color = MaterialTheme.colorScheme.tertiary,
+                                fontSize = 13.sp
+                            )
+                            Text(
+                                "-$${String.format("%.2f", discount)}",
+                                color = MaterialTheme.colorScheme.tertiary,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    } else if (selectedVoucher != null && !isVoucherValid) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "Discount (${selectedVoucher!!.discountPercent}%)",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                fontSize = 13.sp
+                            )
+                            Text(
+                                "Not applicable",
+                                color = MaterialTheme.colorScheme.error,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    // Total
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Total", color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "$${String.format("%.2f", finalTotal)}",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                    }
+                    
                     Button(
                         onClick = {
                             val order = Order(
                                 id = UUID.randomUUID().toString(),
                                 dateTime = DataManager.formatOrderDateTime(),
                                 items = cartItems.toList(),
-                                totalPrice = totalAmount,
+                                totalPrice = finalTotal,
                                 status = OrderStatus.WAITING_PICKUP,
                                 receiverName = receiverName.trim(),
                                 receiverPhone = receiverPhone.trim(),
@@ -298,6 +484,12 @@ fun CheckoutScreen(navController: NavController) {
                             )
                             DataManager.addOrder(order)
                             DataManager.clearCart()
+                            
+                            // Use voucher if applied and valid
+                            if (selectedVoucher != null && isVoucherValid) {
+                                DataManager.useVoucher(selectedVoucher!!.id)
+                            }
+                            
                             navController.navigate(Screen.OrderSuccess.route) {
                                 popUpTo(Screen.Cart.route) { inclusive = true }
                             }
@@ -312,6 +504,32 @@ fun CheckoutScreen(navController: NavController) {
                 }
             }
         }
+    }
+    
+    // Voucher picker bottom sheet
+    if (showVoucherPicker) {
+        VoucherPickerSheet(
+            onVoucherSelected = { voucher ->
+                selectedVoucher = voucher
+            },
+            onDismiss = { showVoucherPicker = false },
+            totalQuantity = totalQuantity
+        )
+    }
+    
+    // Promo code dialog
+    if (showPromoDialog) {
+        PromoCodeDialog(
+            onDismiss = { showPromoDialog = false },
+            onSuccess = { 
+                showPromoDialog = false
+                // Optionally auto-select the newly added voucher
+                val latestVoucher = DataManager.getActiveVouchers().lastOrNull()
+                if (latestVoucher != null) {
+                    selectedVoucher = latestVoucher
+                }
+            }
+        )
     }
 }
 

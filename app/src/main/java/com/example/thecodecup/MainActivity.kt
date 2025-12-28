@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -22,9 +23,12 @@ import com.example.thecodecup.screens.ProfileScreen
 import com.example.thecodecup.screens.SettingsScreen
 import com.example.thecodecup.screens.CheckoutScreen
 import com.example.thecodecup.screens.AddressPickerScreen
+import com.example.thecodecup.screens.MyVouchersScreen
+import com.example.thecodecup.screens.RedeemVoucherScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
             LaunchedEffect(Unit) {
@@ -71,6 +75,12 @@ class MainActivity : ComponentActivity() {
 
                     // Route Settings
                     composable(Screen.Settings.route) { SettingsScreen(navController) }
+                    
+                    // Route My Vouchers
+                    composable(Screen.MyVouchers.route) { MyVouchersScreen(navController) }
+                    
+                    // Route Redeem Voucher
+                    composable(Screen.RedeemVoucher.route) { RedeemVoucherScreen(navController) }
                 }
             }
         }

@@ -13,6 +13,7 @@ the UI is componentized, and dark/light theme switching is applied across the ap
 
 ### Coffee browsing & details
 - 8 drinks in menu: Americano, Cappuccino, Mocha, Flat White, Espresso, Latte, Macchiato, Affogato
+- **Search functionality**: Search icon in header to filter drinks by name
 - Details customization:
   - Size: S / M / L
   - Shot: Single / Double
@@ -28,7 +29,7 @@ the UI is componentized, and dark/light theme switching is applied across the ap
 - Swipe-to-delete gesture
 - Total price calculation
 
-### Checkout (Shipping + Payment)
+### Checkout (Shipping + Payment + Vouchers) ✨
 - Shipping info:
   - Receiver name + phone
   - Shipping address
@@ -37,6 +38,13 @@ the UI is componentized, and dark/light theme switching is applied across the ap
   - Cash
   - Bank transfer
   - Card
+- **Voucher/Coupon System**:
+  - Select voucher from available active vouchers
+  - Enter promo code to redeem new vouchers
+  - Apply percentage-based discounts to order total
+  - Conditional vouchers (e.g., minimum order quantity required)
+  - Automatic discount calculation and display
+  - Voucher validation before order placement
 
 ### Address Picker (Real API Integration) ✨
 - **Live data from VNAppMob Province API v2**
@@ -72,13 +80,45 @@ the UI is componentized, and dark/light theme switching is applied across the ap
 - Reward history:
   - Shows: drink name + quantity, points earned, date/time
 - Redeem:
-  - Redeem list uses real drink images
-  - Buttons disabled if not enough points
+  - **Unified Redeem Screen**: Toggle between "Drinks" and "Vouchers"
+  - Redeem drinks: Uses real drink images, buttons disabled if not enough points
+  - Redeem vouchers: Exchange points for discount vouchers (10%, 20%, 50% off)
+  - Vouchers have expiry dates and validity periods
 
 ### Profile
 - Editable user profile:
   - Full name, phone, email, address
 - Used to pre-fill Checkout shipping fields (default address)
+- Quick access to "My Vouchers" screen
+
+### Voucher/Coupon System ✨
+- **My Vouchers Screen**:
+  - View all active vouchers with details (code, discount %, expiry date)
+  - Enter promo codes to redeem new vouchers
+  - Navigate to redeem vouchers with points
+  - Empty state message when no vouchers available
+- **Voucher Types**:
+  - Percentage-based discounts (10%, 20%, 50%, etc.)
+  - Conditional vouchers with minimum order quantity requirements
+  - Single-use vouchers (removed after checkout)
+- **Voucher Sources**:
+  - **Redeemed**: Exchanged with reward points
+  - **Admin Gift**: Default vouchers given on first app install
+  - **Promo Code**: Entered via promo code dialog
+- **Default Vouchers** (on first install):
+  - Welcome 50% Off (30 days validity)
+  - Group Order 20% Off (requires ≥3 items, 60 days validity)
+  - First Order 15% Off (90 days validity)
+- **Voucher Management**:
+  - Automatic expiry date checking
+  - Status tracking (ACTIVE, USED, EXPIRED)
+  - Conditional application (validates minimum order quantity)
+  - Voucher picker at checkout filters applicable vouchers
+- **Redeem Voucher Screen**:
+  - Unified interface for redeeming drinks and vouchers
+  - Toggle between "Drinks" and "Vouchers" tabs
+  - Shows points required and validity period
+  - Disabled state when insufficient points
 
 ### Settings
 - Dark/Light toggle (custom UI switch + icon changes)
@@ -115,7 +155,7 @@ Routes are defined in:
 NavHost setup in:
 - `app/src/main/java/com/example/thecodecup/MainActivity.kt`
 
-Main screens: Splash, Home, Details, Cart, Checkout, Address Picker, Order Success, My Orders, Rewards, Redeem, Profile, Settings.
+Main screens: Splash, Home, Details, Cart, Checkout, Address Picker, Order Success, My Orders, Rewards, Redeem Voucher, My Vouchers, Profile, Settings.
 
 ## API Integration (Vietnamese Address)
 
@@ -163,6 +203,8 @@ Implementation:
 Key behavior:
 - App restart keeps all data
 - Data is only cleared manually through Settings → Clear all data
+- Default vouchers are automatically added on first app install
+- Vouchers are persisted and restored across app restarts
 
 Files:
 - `app/src/main/java/com/example/thecodecup/data/PersistedAppState.kt`
@@ -203,6 +245,7 @@ UI icons (VectorDrawable XML):
 - Bottom nav: `store_icon.xml`, `gift_icon.xml`, `bill_icon.xml`, `settings_icon.xml`, `profile_icon.xml`
 - Theme: `moon.xml`, `sun.xml`
 - Details: `cup_size.xml`, `hot_icon.xml`, `cold_icon.xml`, `ice_1.xml`, `ice_2.xml`, `ice_3.xml`
+- Search: `search_icon.xml` (for drink search functionality)
 
 Splash background:
 - `landing.jpeg`
@@ -229,7 +272,8 @@ app/src/main/java/com/example/thecodecup/
 │   ├── DataManager.kt
 │   ├── Order.kt
 │   ├── Reward.kt
-│   └── User.kt
+│   ├── User.kt
+│   └── Voucher.kt              # Voucher models (Voucher, RedeemableVoucher, PromoCodeTemplate)
 ├── screens/
 │   ├── AddressPickerScreen.kt
 │   ├── CartScreen.kt
@@ -237,9 +281,11 @@ app/src/main/java/com/example/thecodecup/
 │   ├── DetailsScreen.kt
 │   ├── HomeScreen.kt
 │   ├── MyOrdersScreen.kt
+│   ├── MyVouchersScreen.kt     # Voucher management screen
 │   ├── OrderSuccessScreen.kt
 │   ├── ProfileScreen.kt
-│   ├── RedeemScreen.kt
+│   ├── RedeemScreen.kt         # Deprecated (redirects to RedeemVoucherScreen)
+│   ├── RedeemVoucherScreen.kt  # Unified redeem screen (drinks + vouchers)
 │   ├── RewardsScreen.kt
 │   ├── SettingsScreen.kt
 │   └── SplashScreen.kt
@@ -247,7 +293,10 @@ app/src/main/java/com/example/thecodecup/
     ├── components/
     │   ├── BottomNavBar.kt
     │   ├── CoffeeCard.kt
-    │   └── LoyaltyCard.kt
+    │   ├── LoyaltyCard.kt
+    │   ├── PromoCodeDialog.kt   # Promo code input dialog
+    │   ├── VoucherCard.kt       # Voucher display card
+    │   └── VoucherPickerSheet.kt # Bottom sheet for voucher selection at checkout
     ├── theme/
     │   ├── Color.kt
     │   ├── Theme.kt

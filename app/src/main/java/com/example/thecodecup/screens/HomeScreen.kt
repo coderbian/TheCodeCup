@@ -14,6 +14,9 @@ import androidx.compose.ui.layout.ContentScale
 import com.example.thecodecup.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,8 +64,25 @@ fun HomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // 3. Coffee Grid Section (container fixed, ONLY grid scrolls)
+            var isSearchVisible by remember { mutableStateOf(false) }
+            var searchQuery by remember { mutableStateOf("") }
             CoffeeGridSection(
                 navController = navController,
+                isSearchVisible = isSearchVisible,
+                searchQuery = searchQuery,
+                onSearchQueryChange = { searchQuery = it },
+                onSearchClick = { 
+                    isSearchVisible = !isSearchVisible
+                    if (!isSearchVisible) {
+                        searchQuery = "" // Clear search when closing
+                    }
+                },
+                onSearchVisibilityChange = { 
+                    isSearchVisible = it
+                    if (!it) {
+                        searchQuery = "" // Clear search when closing
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -117,10 +137,26 @@ fun HeaderSection(navController: NavController) {
 @Composable
 fun CoffeeGridSection(
     navController: NavController,
+    isSearchVisible: Boolean,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onSearchClick: () -> Unit,
+    onSearchVisibilityChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Get all coffee items from DataManager
-    val coffees = DataManager.menu
+    val allCoffees = DataManager.menu
+    
+    // Filter coffees based on search query
+    val coffees = remember(allCoffees, searchQuery) {
+        if (searchQuery.isBlank()) {
+            allCoffees
+        } else {
+            allCoffees.filter { coffee ->
+                coffee.name.contains(searchQuery, ignoreCase = true)
+            }
+        }
+    }
 
     // Dark blue container (like loyalty card)
     Card(
@@ -133,13 +169,61 @@ fun CoffeeGridSection(
                 .fillMaxSize()
                 .padding(16.dp) // slightly smaller padding like teacher design
         ) {
-            // Title - WHITE text on dark background
-            Text(
-                "Choose your coffee",
-                color = MaterialTheme.colorScheme.onSecondary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
+            // Title and Search Icon
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Choose your coffee",
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                // Search icon button
+                IconButton(onClick = onSearchClick) {
+                    Image(
+                        painter = painterResource(id = R.drawable.search_icon),
+                        contentDescription = "Search",
+                        modifier = Modifier.size(24.dp),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondary)
+                    )
+                }
+            }
+            
+            // Search bar (shown when isSearchVisible is true)
+            if (isSearchVisible) {
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Search coffee...", color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.6f)) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSecondary,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f),
+                        cursorColor = MaterialTheme.colorScheme.primary
+                    ),
+                    singleLine = true,
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { 
+                                onSearchQueryChange("")
+                            }) {
+                                Text(
+                                    "✕",
+                                    color = MaterialTheme.colorScheme.onSecondary,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    }
+                )
+            }
+            
             Spacer(modifier = Modifier.height(12.dp))
 
             // ONLY this grid scrolls
